@@ -1,7 +1,7 @@
 {
   "server": {
     "host": "127.0.0.1",
-    "port": 8420
+    "port": 4855
   },
   "router": {
     "embedding_model": "all-MiniLM-L6-v2",

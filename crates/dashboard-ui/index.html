@@ -6,9 +6,15 @@
     <title>Switchyard Dashboard</title>
     <link data-trunk rel="rust" data-wasm-opt="z" />
     <style>
-        /* Inline base styles - Leptos will inject component styles */
         body { margin: 0; background: #0f1117; }
     </style>
+    <script type="module">
+    // Trunk initializes WASM but never calls main(). Hook into its event and call it.
+    window.addEventListener('TrunkApplicationStarted', () => {
+        const b = window.wasmBindings;
+        if (b && typeof b.main === 'function') b.main();
+    });
+    </script>
 </head>
 <body>
 </body>

@@ -1,0 +1,7 @@
+[serve]
+port = 4855
+address = "127.0.0.1"
+
+[build]
+target = "index.html"
+dist = "dist"

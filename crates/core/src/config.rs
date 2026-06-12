@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Config {
     pub server: ServerConfig,
     pub router: RouterConfig,
@@ -10,7 +10,7 @@ pub struct Config {
     pub dashboard: DashboardConfig,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ServerConfig {
     #[serde(default = "default_host")]
     pub host: String,
@@ -26,7 +26,7 @@ fn default_port() -> u16 {
     8420
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct RouterConfig {
     pub embedding_model: String,
     #[serde(default = "default_threshold")]
@@ -39,13 +39,13 @@ fn default_threshold() -> f32 {
     0.25
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Capability {
     pub name: String,
     pub examples: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Backend {
     pub name: String,
     pub provider: String,
@@ -55,7 +55,7 @@ pub struct Backend {
     pub model: String,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DashboardConfig {
     #[serde(default = "default_db_path")]
     pub db_path: String,
@@ -78,6 +78,12 @@ impl Config {
         let content = std::fs::read_to_string(path)?;
         let config: Config = serde_json::from_str(&content)?;
         Ok(config)
+    }
+
+    pub fn save(path: &Path, config: &Config) -> anyhow::Result<()> {
+        let content = serde_json::to_string_pretty(config)?;
+        std::fs::write(path, content)?;
+        Ok(())
     }
 
     pub fn find_backend(&self, name: &str) -> Option<&Backend> {
