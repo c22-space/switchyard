@@ -15,7 +15,9 @@ Capability router for agentic workflows. A tiny Rust engine that runs locally an
 ```
 Client (OpenAI-compatible)
     ↓
-Switchyard (port 8420)
+Switchyard (port 4855)
+    ├── API routes (/v1/chat/completions, /health, /api/*)
+    ├── Static dashboard (Astro + React, served from dist/)
     ├── Embedding model (all-MiniLM-L6-v2)
     ├── Capability centroids (tool_call, general, ...)
     └── Backend routing
@@ -23,11 +25,24 @@ Switchyard (port 8420)
          └── general → Ollama (Llama 3.1)
 ```
 
+## Project Structure
+
+```
+switchyard/
+├── crates/
+│   ├── cli/           # Axum server + CLI binary
+│   ├── core/          # Routing engine, config, event store
+│   └── dashboard-ui/  # Astro + React dashboard (static build)
+├── specs/             # Design specifications
+├── switchyard.json    # Runtime config
+└── AGENTS.md          # Agent instructions
+```
+
 ## Config
 
 ```json
 {
-  "server": { "host": "127.0.0.1", "port": 8420 },
+  "server": { "host": "127.0.0.1", "port": 4855 },
   "router": {
     "embedding_model": "all-MiniLM-L6-v2",
     "threshold": 0.25,
@@ -47,14 +62,43 @@ Switchyard (port 8420)
 ## Build & Run
 
 ```bash
-cargo build --release
-./target/release/switchyard switchyard.json
+# Build the Rust binary
+cargo build
+
+# Start the server (serves API + dashboard)
+cd /home/charlie/switchyard
+RUST_LOG=info ./target/debug/switchyard server
 ```
+
+The server serves both the API and the dashboard static files on a single port (4855).
+
+### Dashboard (development)
+
+```bash
+cd crates/dashboard-ui
+npm install
+npm run dev    # Dev server at localhost:4321 (with hot reload)
+npm run build  # Static build to dist/
+```
+
+After `npm run build`, restart the Switchyard server to pick up new static files.
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/v1/chat/completions` | POST | OpenAI-compatible routing proxy |
+| `/health` | POST | Health check |
+| `/api/stats` | GET | Aggregate routing statistics |
+| `/api/routes` | GET | Recent route events (`?limit=50`) |
+| `/api/overview` | GET | Stats + config summary (for dashboard) |
+| `/api/providers` | GET | List all backends |
+| `/api/providers` | POST | Add a new backend (persists to config) |
 
 ## Test
 
 ```bash
-curl -X POST http://127.0.0.1:8420/v1/chat/completions \
+curl -X POST http://127.0.0.1:4855/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"test","messages":[{"role":"user","content":"What is the weather in Tokyo?"}]}'
 ```
@@ -67,6 +111,9 @@ curl -X POST http://127.0.0.1:8420/v1/chat/completions \
 - OpenAI-compatible API endpoint
 - Backend forwarding (non-streaming)
 - Streaming passthrough
+- Dashboard with Overview, Routes, Config tabs
+- Provider management (add via dashboard)
+- Single-port serving (API + static files)
 
 ### What's next
 - Provider plugin for Hermes

@@ -8,3 +8,4 @@ test.sh
 *.db
 switchyard.db
 crates/dashboard-ui/target/
+.env

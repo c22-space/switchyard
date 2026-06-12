@@ -2,78 +2,91 @@
 
 ## Overview
 
-The dashboard UI is a standalone Leptos WASM application that displays real-time routing statistics and recent route events. It fetches data from the routing server's JSON API. There is no separate dashboard server.
+The dashboard is a static Astro + React application built to `crates/dashboard-ui/dist/`. The Axum server serves these files directly on the same port as the API (4855). There is no separate dashboard server.
 
 ---
 
 ## 1. Architecture
 
 ```
-trunk serve / trunk build
+npm run build (Astro)
         |
         v
-   Leptos WASM app
+   Static HTML/JS/CSS in dist/
         |
-        | fetch()
+        | served by Axum ServeDir fallback
         v
-   Routing server (port 8420)
-   GET /api/stats
-   GET /api/routes?limit=50
+   Switchyard server (port 4855)
+   ├── /api/stats
+   ├── /api/routes?limit=50
+   ├── /api/overview
+   ├── /api/providers (GET/POST)
+   └── /* (static files from dist/)
 ```
 
-- **Development:** `trunk serve` in `crates/dashboard-ui/` starts a dev server (default port 8080). The WASM app fetches from `http://127.0.0.1:8420`.
-- **Production:** `trunk build` produces static files in `dist/`. Serve with any static file server.
+- **Development:** `npm run dev` in `crates/dashboard-ui/` starts Astro dev server at `localhost:4321`. API calls proxy to port 4855.
+- **Production:** `npm run build` produces static files in `dist/`. Restart the Switchyard server to serve them.
 
 ---
 
-## 2. API Endpoints (consumed, not provided)
+## 2. API Endpoints (consumed)
 
 | Endpoint | Method | Query Params | Description |
 |---|---|---|---|
+| `/api/overview` | GET | — | Stats + config summary |
 | `/api/stats` | GET | — | Aggregate routing statistics |
 | `/api/routes` | GET | `limit` (default 50) | Recent route events, newest first |
+| `/api/providers` | GET | — | List all backends |
+| `/api/providers` | POST | — | Add a new backend |
 
-Both endpoints are served by the routing server on `server.port`.
+All endpoints are served by the routing server on `server.port` (4855).
 
 ---
 
 ## 3. UI Components
 
-### 3.1 Stat Cards
+### 3.1 Sidebar Navigation
 
-Eight stat cards displayed in a responsive grid:
-- Total Routes
-- Tool Call count
-- General count
-- Fallback count
-- Avg Latency
-- P50 Latency
-- P95 Latency
-- Avg Score
+Three tabs: Overview, Routes, Config. Implemented with React `useState` for tab switching.
 
-### 3.2 Route Table
+### 3.2 Overview Tab
 
-Columns: Time, Prompt, Category, Score, Backend, Latency, Status
+Eight stat cards in a responsive grid:
+- Total Routes, Tool Call count, General count, Fallback count
+- Avg Latency, P95 Latency, Accuracy, Avg Score
 
-- Category displayed as colored badge (blue for tool_call, green for general, yellow for fallback)
-- Status badge (green for ok, red for error)
-- Prompt truncated to 50 chars with ellipsis, full text in title attribute
-- Time extracted from ISO timestamp, shown as HH:MM:SS
+Below the cards: Router Config section showing backends count, capabilities count, embedding model, threshold, fallback.
 
-### 3.3 Auto-Refresh
+### 3.3 Routes Tab
 
-Polls both endpoints every 5 seconds using `gloo-timers`.
+Table with columns: Time, Prompt, Category, Score, Backend, Latency, Status.
+
+- Category: colored text (green for tool_call, blue for general, yellow for fallback)
+- Status: green for ok, red for error
+- Prompt truncated to 60 chars
+- Limit selector (10, 20, 50, 100)
+
+### 3.4 Config Tab
+
+Provider management:
+- List of current providers (name, provider, model, base_url)
+- "+ Add Provider" button opens inline form
+- Form fields: Name, Provider, Base URL, Model
+- POST to `/api/providers` on submit (persists to `switchyard.json`)
 
 ---
 
 ## 4. Styling
 
-Dark theme with GitHub-inspired color palette:
-- Background: `#0f1117`
-- Card background: `#161b22`
-- Border: `#30363d`
-- Text: `#e1e4e8`
-- Accent: `#58a6ff`
+Dark theme with Zinc color palette:
+- Background: `#09090b`
+- Surface: `#18181b`
+- Border: `#27272a`
+- Text: `#fafafa`
+- Muted text: `#a1a1aa`
+- Accent: `#3b82f6`
+
+All styles are inline React styles (no external CSS framework).
 
 ---
 
@@ -82,22 +95,48 @@ Dark theme with GitHub-inspired color palette:
 ```bash
 cd crates/dashboard-ui
 
-# Development (with hot reload)
-trunk serve
+# Install dependencies
+npm install
+
+# Development (hot reload)
+npm run dev
 
 # Production build
-trunk build --release
+npm run build
 ```
 
-Output goes to `dist/` directory.
+Output goes to `dist/` directory. Restart Switchyard server to serve new files.
 
 ---
 
 ## 6. Running
 
-The dashboard UI is independent of the routing server process. Start them separately:
+The dashboard is served by the Switchyard server on the same port:
 
-1. `switchyard server` (starts routing engine on port 8420)
-2. `trunk serve` or serve the built `dist/` directory (dashboard UI)
+1. `cd crates/dashboard-ui && npm run build` (build dashboard)
+2. `cd /home/charlie/switchyard && RUST_LOG=info ./target/debug/switchyard server` (starts on port 4855)
 
-The dashboard UI expects the routing server at `http://127.0.0.1:8420` by default.
+Access at `http://127.0.0.1:4855` or via Cloudflare tunnel.
+
+---
+
+## 7. Project Structure
+
+```
+crates/dashboard-ui/
+├── astro.config.mjs      # Astro config with React integration
+├── package.json           # Dependencies (astro, react, react-dom)
+├── tsconfig.json          # TypeScript config
+├── public/                # Static assets (favicon)
+├── src/
+│   ├── layouts/
+│   │   └── Layout.astro   # Base HTML layout with global styles
+│   ├── pages/
+│   │   └── index.astro    # Entry point, mounts Dashboard component
+│   └── components/
+│       ├── Dashboard.tsx   # Main component with sidebar nav + tab routing
+│       ├── Overview.tsx    # Stats cards + router config
+│       ├── Routes.tsx      # Route event table
+│       └── Config.tsx      # Provider list + add form
+└── dist/                  # Build output (served by Axum)
+```

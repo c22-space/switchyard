@@ -2,7 +2,7 @@
 
 ## Overview
 
-The core routing engine classifies incoming LLM prompts by semantic similarity to configured capabilities, routes them to the most appropriate backend, and logs every decision to SQLite for analytics. The same server also exposes a JSON API for the dashboard UI.
+The core routing engine classifies incoming LLM prompts by semantic similarity to configured capabilities, routes them to the most appropriate backend, and logs every decision to SQLite for analytics. The same server also exposes a JSON API for the dashboard UI and serves the dashboard static files.
 
 ---
 
@@ -11,8 +11,8 @@ The core routing engine classifies incoming LLM prompts by semantic similarity t
 ```json
 {
   "server": {
-    "host": "0.0.0.0",
-    "port": 8420
+    "host": "127.0.0.1",
+    "port": 4855
   },
   "router": {
     "embedding_model": "all-MiniLM-L6-v2",
@@ -41,18 +41,18 @@ The core routing engine classifies incoming LLM prompts by semantic similarity t
   },
   "backends": [
     {
-      "name": "openai",
-      "provider": "openai",
-      "base_url": "https://api.openai.com/v1",
-      "api_key": "${OPENAI_API_KEY}",
-      "model": "gpt-4"
+      "name": "tool_call",
+      "provider": "openrouter",
+      "base_url": "https://openrouter.ai/api",
+      "api_key": null,
+      "model": "anthropic/claude-sonnet-4"
     },
     {
-      "name": "ollama",
+      "name": "general",
       "provider": "ollama",
-      "base_url": "http://localhost:11434/v1",
-      "api_key": "",
-      "model": "llama3"
+      "base_url": "http://localhost:11434",
+      "api_key": null,
+      "model": "llama3.1"
     }
   ],
   "dashboard": {
@@ -65,8 +65,8 @@ The core routing engine classifies incoming LLM prompts by semantic similarity t
 
 | Field | Type | Required | Default | Notes |
 |---|---|---|---|---|
-| `server.host` | string | no | `"0.0.0.0"` | Bind address for the routing proxy |
-| `server.port` | integer | no | `8420` | Listening port for the proxy |
+| `server.host` | string | no | `"127.0.0.1"` | Bind address for the routing proxy |
+| `server.port` | integer | no | `4855` | Listening port for the proxy + dashboard |
 | `router.embedding_model` | string | yes | — | fastembed model identifier |
 | `router.threshold` | float | yes | `0.25` | Minimum cosine similarity to avoid fallback |
 | `router.fallback` | string | yes | — | Capability name used when no centroid exceeds threshold |
@@ -131,8 +131,8 @@ CREATE TABLE route_events (
     is_fallback INTEGER NOT NULL,       -- 1 if fallback was used, 0 otherwise
     backend     TEXT NOT NULL,          -- Name of the backend chosen
     model       TEXT NOT NULL,          -- Model identifier used
-    latency_ms  REAL NOT NULL,          -- Total request latency in ms
-    status      TEXT NOT NULL,          -- "success" or "error"
+    latency_ms  REAL,                   -- Total request latency in ms
+    status      TEXT NOT NULL,          -- "ok" or "error"
     error       TEXT                    -- Error message if status = "error", else NULL
 );
 
@@ -188,7 +188,7 @@ CREATE INDEX idx_route_events_category ON route_events(category);
 
 ## 5. HTTP Interface
 
-The server exposes endpoints on a single port (`server.port`):
+The server exposes all endpoints on a single port (`server.port` = 4855). Static dashboard files are served as a fallback for any path not matching an API route.
 
 ### 5.1 OpenAI-Compatible Proxy
 
@@ -261,6 +261,63 @@ GET /api/routes?limit=50
   }
 ]
 ```
+
+### 5.5 Overview (Dashboard)
+
+```
+GET /api/overview
+```
+
+**Response:**
+```json
+{
+  "stats": { ... },
+  "backends": 2,
+  "capabilities": 2,
+  "embedding_model": "all-MiniLM-L6-v2",
+  "threshold": 0.25,
+  "fallback": "general"
+}
+```
+
+### 5.6 Provider Management
+
+```
+GET /api/providers
+```
+
+**Response:**
+```json
+[
+  {
+    "name": "tool_call",
+    "provider": "openrouter",
+    "model": "anthropic/claude-sonnet-4",
+    "base_url": "https://openrouter.ai/api"
+  }
+]
+```
+
+```
+POST /api/providers
+Content-Type: application/json
+
+{
+  "name": "my-provider",
+  "provider": "openai",
+  "base_url": "https://api.openai.com/v1",
+  "model": "gpt-4",
+  "api_key": null
+}
+```
+
+**Response:** `{ "ok": true, "provider": { ... } }`
+
+Persists the new backend to `switchyard.json`. Server restart required for routing to use the new backend.
+
+### 5.7 Static Files (Dashboard)
+
+Any request not matching an API route is served from `crates/dashboard-ui/dist/` using `tower-http::services::ServeDir` with `append_index_html_on_directories(true)`.
 
 ---
 

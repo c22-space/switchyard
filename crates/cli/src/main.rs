@@ -76,6 +76,12 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     let db_path = std::path::Path::new(&config.dashboard.db_path);
     let event_store = EventStore::new(db_path)?;
 
+    // Resolve .env path (same directory as config file)
+    let env_path = config_path
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .join(".env");
+
     println!("{}", "Switchyard starting...".green().bold());
     println!(
         "  Routing server: {}:{}",
@@ -87,6 +93,7 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         router,
         config: config.clone(),
         config_path: config_path.clone(),
+        env_path,
         http_client: reqwest::Client::new(),
         event_store,
     });
@@ -102,6 +109,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         .route("/api/overview", axum::routing::get(overview))
         .route("/api/providers", axum::routing::get(list_providers))
         .route("/api/providers", axum::routing::post(add_provider))
+        .route("/api/providers", axum::routing::put(update_provider))
+        .route("/api/providers", axum::routing::delete(delete_provider))
         .with_state(state);
 
     let addr = format!("{}:{}", config.server.host, config.server.port);
@@ -128,6 +137,7 @@ struct RouteState {
     router: Router,
     config: Config,
     config_path: PathBuf,
+    env_path: PathBuf,
     http_client: reqwest::Client,
     event_store: EventStore,
 }
@@ -200,15 +210,87 @@ async fn overview(
     })))
 }
 
+// ── .env key management ────────────────────────────────────────────────
+
+/// Read all keys from .env file as key-value pairs.
+fn read_env_keys(path: &std::path::Path) -> std::collections::HashMap<String, String> {
+    let mut map = std::collections::HashMap::new();
+    if !path.exists() {
+        return map;
+    }
+    if let Ok(content) = std::fs::read_to_string(path) {
+        for line in content.lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            if let Some((key, value)) = line.split_once('=') {
+                map.insert(key.trim().to_string(), value.trim().to_string());
+            }
+        }
+    }
+    map
+}
+
+/// Write all key-value pairs back to .env file.
+fn write_env_keys(path: &std::path::Path, keys: &std::collections::HashMap<String, String>) -> Result<()> {
+    let mut lines: Vec<String> = Vec::new();
+    for (k, v) in keys {
+        lines.push(format!("{}={}", k, v));
+    }
+    lines.sort();
+    std::fs::write(path, lines.join("\n") + "\n")?;
+    Ok(())
+}
+
+/// Get the env var name for a backend's API key.
+fn env_key_name(backend_name: &str) -> String {
+    format!("{}_KEY", backend_name.to_uppercase().replace('-', "_"))
+}
+
+/// Mask a key for display: show first 3 and last 4 chars.
+fn mask_key(key: &str) -> String {
+    if key.len() <= 7 {
+        return "*".repeat(key.len());
+    }
+    format!("{}...{}", &key[..3], &key[key.len() - 4..])
+}
+
+/// Load API key for a backend from .env.
+fn load_backend_key(env_path: &std::path::Path, backend_name: &str) -> Option<String> {
+    let keys = read_env_keys(env_path);
+    keys.get(&env_key_name(backend_name)).cloned()
+}
+
+/// Save API key for a backend to .env.
+fn save_backend_key(env_path: &std::path::Path, backend_name: &str, api_key: &str) -> Result<()> {
+    let mut keys = read_env_keys(env_path);
+    keys.insert(env_key_name(backend_name), api_key.to_string());
+    write_env_keys(env_path, &keys)
+}
+
+/// Remove API key for a backend from .env.
+fn remove_backend_key(env_path: &std::path::Path, backend_name: &str) -> Result<()> {
+    let mut keys = read_env_keys(env_path);
+    keys.remove(&env_key_name(backend_name));
+    write_env_keys(env_path, &keys)
+}
+
+// ── Provider API handlers ──────────────────────────────────────────────
+
 async fn list_providers(
     axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
 ) -> axum::Json<Vec<serde_json::Value>> {
     let providers: Vec<serde_json::Value> = state.config.backends.iter().map(|b| {
+        let masked = load_backend_key(&state.env_path, &b.name)
+            .map(|k| mask_key(&k))
+            .unwrap_or_else(|| "no key".to_string());
         serde_json::json!({
             "name": b.name,
             "provider": b.provider,
             "model": b.model,
             "base_url": b.base_url,
+            "api_key_masked": masked,
         })
     }).collect();
     axum::Json(providers)
@@ -218,12 +300,22 @@ async fn add_provider(
     axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
     axum::extract::Json(backend): axum::extract::Json<switchyard_core::config::Backend>,
 ) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    // Save API key to .env if provided
+    if let Some(ref key) = backend.api_key {
+        if !key.is_empty() {
+            save_backend_key(&state.env_path, &backend.name, key)
+                .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+        }
+    }
+
     let mut config = state.config.clone();
-    config.backends.push(backend.clone());
-    Config::save(&state.config_path, &config).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
-    // Update in-memory config
-    // Note: this won't take effect until server restart for routing purposes,
-    // but the dashboard will see the new provider immediately
+    // Save backend without the key (key lives in .env)
+    let mut backend_clean = backend.clone();
+    backend_clean.api_key = None;
+    config.backends.push(backend_clean);
+    Config::save(&state.config_path, &config)
+        .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
     Ok(axum::Json(serde_json::json!({
         "ok": true,
         "provider": {
@@ -232,6 +324,87 @@ async fn add_provider(
             "model": backend.model,
             "base_url": backend.base_url,
         }
+    })))
+}
+
+#[derive(serde::Deserialize)]
+struct ProviderIndex {
+    index: usize,
+}
+
+#[derive(serde::Deserialize)]
+struct UpdateProvider {
+    index: usize,
+    name: String,
+    provider: String,
+    base_url: String,
+    model: String,
+    /// If Some and non-empty, update the key. If None or empty, keep existing.
+    #[serde(default)]
+    api_key: Option<String>,
+}
+
+async fn update_provider(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Json(payload): axum::extract::Json<UpdateProvider>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let mut config = state.config.clone();
+    if payload.index >= config.backends.len() {
+        return Err(axum::http::StatusCode::BAD_REQUEST);
+    }
+
+    let old_name = config.backends[payload.index].name.clone();
+
+    // Update the key in .env if a new one was provided
+    if let Some(ref key) = payload.api_key {
+        if !key.is_empty() {
+            // If name changed, remove old key and save under new name
+            if old_name != payload.name {
+                let _ = remove_backend_key(&state.env_path, &old_name);
+            }
+            save_backend_key(&state.env_path, &payload.name, key)
+                .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+        }
+    }
+
+    config.backends[payload.index] = switchyard_core::config::Backend {
+        name: payload.name.clone(),
+        provider: payload.provider.clone(),
+        base_url: payload.base_url.clone(),
+        api_key: None, // Key lives in .env
+        model: payload.model.clone(),
+    };
+    Config::save(&state.config_path, &config)
+        .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(axum::Json(serde_json::json!({
+        "ok": true,
+        "provider": {
+            "name": payload.name,
+            "provider": payload.provider,
+            "model": payload.model,
+            "base_url": payload.base_url,
+        }
+    })))
+}
+
+async fn delete_provider(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Json(payload): axum::extract::Json<ProviderIndex>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let mut config = state.config.clone();
+    if payload.index >= config.backends.len() {
+        return Err(axum::http::StatusCode::BAD_REQUEST);
+    }
+    let removed = config.backends.remove(payload.index);
+    // Remove key from .env
+    let _ = remove_backend_key(&state.env_path, &removed.name);
+    Config::save(&state.config_path, &config)
+        .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(axum::Json(serde_json::json!({
+        "ok": true,
+        "removed": removed.name,
     })))
 }
 
@@ -282,6 +455,9 @@ async fn chat_completions(
         None,
     );
 
+    // Load API key from .env
+    let api_key = load_backend_key(&state.env_path, &backend.name);
+
     // Forward to backend
     let url = format!("{}/v1/chat/completions", backend.base_url);
     let mut body = serde_json::to_value(&request)
@@ -289,8 +465,8 @@ async fn chat_completions(
     body["model"] = serde_json::Value::String(backend.model.clone());
 
     let mut req_builder = state.http_client.post(&url).json(&body);
-    if let Some(ref api_key) = backend.api_key {
-        req_builder = req_builder.bearer_auth(api_key);
+    if let Some(ref key) = api_key {
+        req_builder = req_builder.bearer_auth(key);
     }
 
     let resp = req_builder.send().await.map_err(|e| {
