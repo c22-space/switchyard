@@ -394,6 +394,7 @@ pub fn main() {
 
 const CSS: &str = r#"
 *{margin:0;padding:0;box-sizing:border-box}
+.hidden{display:none !important}
 :root{
   --bg:#09090b;--surface:#18181b;--surface2:#27272a;
   --border:#3f3f46;--border2:#52525b;
