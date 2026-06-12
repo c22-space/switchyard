@@ -5,3 +5,6 @@
 .DS_Store
 .fastembed_cache/
 test.sh
+*.db
+switchyard.db
+crates/dashboard-ui/target/

@@ -1,0 +1,15 @@
+[package]
+name = "switchyard-core"
+version.workspace = true
+edition.workspace = true
+description = "Capability router engine for agentic workflows"
+
+[dependencies]
+fastembed = "4"
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+rusqlite = { version = "0.32", features = ["bundled"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
