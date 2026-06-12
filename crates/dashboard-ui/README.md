@@ -1,43 +1,66 @@
-# Astro Starter Kit: Minimal
+# Switchyard Dashboard UI
 
-```sh
-npm create astro@latest -- --template minimal
+Astro + React dashboard for the Switchyard capability router.
+
+## Setup
+
+```bash
+npm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Development
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run dev    # Starts at localhost:4321 with hot reload
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The dev server proxies API calls to `http://127.0.0.1:4855`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Production Build
 
-Any static assets, like images, can be placed in the `public/` directory.
+```bash
+npm run build  # Outputs to dist/
+```
 
-## 🧞 Commands
+After building, restart the Switchyard server to serve the new static files.
 
-All commands are run from the root of the project, from a terminal:
+## Stack
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- **Astro** — Static site generation, page routing
+- **React** — Interactive UI components (client-side hydrated)
+- **TypeScript** — Type safety
 
-## 👀 Want to learn more?
+## Project Structure
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```
+src/
+├── layouts/
+│   └── Layout.astro       # Base HTML layout, global CSS variables
+├── pages/
+│   └── index.astro        # Entry point, mounts Dashboard
+└── components/
+    ├── Dashboard.tsx       # Sidebar nav + tab switching
+    ├── Overview.tsx        # Stats cards + router config
+    ├── Routes.tsx          # Route event table with limit selector
+    └── Config.tsx          # Provider list + add form
+```
+
+## API Endpoints Used
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/overview` | GET | Stats + config summary |
+| `/api/stats` | GET | Aggregate routing statistics |
+| `/api/routes` | GET | Recent route events (`?limit=N`) |
+| `/api/providers` | GET | List all backends |
+| `/api/providers` | POST | Add a new backend |
+
+All API calls use relative paths (same-origin serving).
+
+## Styling
+
+Dark theme using inline React styles with CSS custom properties:
+- Background: `#09090b`
+- Surface: `#18181b`
+- Border: `#27272a`
+- Accent: `#3b82f6`

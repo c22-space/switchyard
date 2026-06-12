@@ -26,20 +26,21 @@ switchyard [--config <path>] <command> [options]
 
 ### 2.1 `switchyard server`
 
-Starts the routing server with all endpoints (proxy, stats, routes, health).
+Starts the routing server with all endpoints (proxy, stats, routes, health, overview, providers) and serves the dashboard static files.
 
 **Behavior:**
 1. Load and validate configuration from `--config` path.
 2. Initialize the fastembed embedding model and compute capability centroids.
 3. Initialize the SQLite database (create `route_events` table if not exists).
 4. Start the HTTP server on `server.host:server.port` with all endpoints.
-5. Block until interrupted (Ctrl+C / SIGTERM), then gracefully shut down.
+5. Serve static dashboard files from `crates/dashboard-ui/dist/` as fallback.
+6. Block until interrupted (Ctrl+C / SIGTERM), then gracefully shut down.
 
 **Output:**
 
 ```
 Switchyard starting...
-  Routing server: 0.0.0.0:8420
+  Routing server: 127.0.0.1:4855
 
 Server ready.
 ```
@@ -49,6 +50,10 @@ Server ready.
 - `POST /health` — Health check
 - `GET /api/stats` — Routing statistics
 - `GET /api/routes` — Recent route events
+- `GET /api/overview` — Stats + config summary (dashboard)
+- `GET /api/providers` — List backends
+- `POST /api/providers` — Add a backend
+- `GET /*` — Static dashboard files (fallback)
 
 **Exit Codes:**
 
