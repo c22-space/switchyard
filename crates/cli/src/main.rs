@@ -102,6 +102,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         .route("/api/overview", axum::routing::get(overview))
         .route("/api/providers", axum::routing::get(list_providers))
         .route("/api/providers", axum::routing::post(add_provider))
+        .route("/api/providers", axum::routing::put(update_provider))
+        .route("/api/providers", axum::routing::delete(delete_provider))
         .with_state(state);
 
     let addr = format!("{}:{}", config.server.host, config.server.port);
@@ -232,6 +234,65 @@ async fn add_provider(
             "model": backend.model,
             "base_url": backend.base_url,
         }
+    })))
+}
+
+#[derive(serde::Deserialize)]
+struct ProviderIndex {
+    index: usize,
+}
+
+#[derive(serde::Deserialize)]
+struct UpdateProvider {
+    index: usize,
+    name: String,
+    provider: String,
+    base_url: String,
+    model: String,
+    #[serde(default)]
+    api_key: Option<String>,
+}
+
+async fn update_provider(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Json(payload): axum::extract::Json<UpdateProvider>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let mut config = state.config.clone();
+    if payload.index >= config.backends.len() {
+        return Err(axum::http::StatusCode::BAD_REQUEST);
+    }
+    config.backends[payload.index] = switchyard_core::config::Backend {
+        name: payload.name.clone(),
+        provider: payload.provider.clone(),
+        base_url: payload.base_url.clone(),
+        api_key: payload.api_key.clone(),
+        model: payload.model.clone(),
+    };
+    Config::save(&state.config_path, &config).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    Ok(axum::Json(serde_json::json!({
+        "ok": true,
+        "provider": {
+            "name": payload.name,
+            "provider": payload.provider,
+            "model": payload.model,
+            "base_url": payload.base_url,
+        }
+    })))
+}
+
+async fn delete_provider(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Json(payload): axum::extract::Json<ProviderIndex>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let mut config = state.config.clone();
+    if payload.index >= config.backends.len() {
+        return Err(axum::http::StatusCode::BAD_REQUEST);
+    }
+    let removed = config.backends.remove(payload.index);
+    Config::save(&state.config_path, &config).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    Ok(axum::Json(serde_json::json!({
+        "ok": true,
+        "removed": removed.name,
     })))
 }
 
