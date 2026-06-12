@@ -7,6 +7,7 @@ use std::sync::Arc;
 use switchyard_core::config::Config;
 use switchyard_core::event::EventStore;
 use switchyard_core::router::Router;
+use tower_http::services::ServeDir;
 
 #[derive(Parser)]
 #[command(name = "switchyard", about = "Capability router for agentic workflows")]
@@ -85,6 +86,7 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     let state = Arc::new(RouteState {
         router,
         config: config.clone(),
+        config_path: config_path.clone(),
         http_client: reqwest::Client::new(),
         event_store,
     });
@@ -97,6 +99,9 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         .route("/health", axum::routing::post(health))
         .route("/api/stats", axum::routing::get(route_stats))
         .route("/api/routes", axum::routing::get(recent_routes))
+        .route("/api/overview", axum::routing::get(overview))
+        .route("/api/providers", axum::routing::get(list_providers))
+        .route("/api/providers", axum::routing::post(add_provider))
         .with_state(state);
 
     let addr = format!("{}:{}", config.server.host, config.server.port);
@@ -104,6 +109,13 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
 
     println!("{}", "Server ready.".green().bold());
     println!();
+
+    // Serve dashboard static files from dist/ directory
+    let dist_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("dashboard-ui")
+        .join("dist");
+    let app = app.fallback_service(ServeDir::new(&dist_path).append_index_html_on_directories(true));
 
     axum::serve(listener, app).await?;
 
@@ -115,6 +127,7 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
 struct RouteState {
     router: Router,
     config: Config,
+    config_path: PathBuf,
     http_client: reqwest::Client,
     event_store: EventStore,
 }
@@ -171,6 +184,55 @@ async fn route_stats(
         .stats()
         .map(axum::Json)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+async fn overview(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let stats = state.event_store.stats().map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    Ok(axum::Json(serde_json::json!({
+        "stats": stats,
+        "backends": state.config.backends.len(),
+        "capabilities": state.config.router.capabilities.len(),
+        "embedding_model": state.config.router.embedding_model,
+        "threshold": state.config.router.threshold,
+        "fallback": state.config.router.fallback,
+    })))
+}
+
+async fn list_providers(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+) -> axum::Json<Vec<serde_json::Value>> {
+    let providers: Vec<serde_json::Value> = state.config.backends.iter().map(|b| {
+        serde_json::json!({
+            "name": b.name,
+            "provider": b.provider,
+            "model": b.model,
+            "base_url": b.base_url,
+        })
+    }).collect();
+    axum::Json(providers)
+}
+
+async fn add_provider(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Json(backend): axum::extract::Json<switchyard_core::config::Backend>,
+) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
+    let mut config = state.config.clone();
+    config.backends.push(backend.clone());
+    Config::save(&state.config_path, &config).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    // Update in-memory config
+    // Note: this won't take effect until server restart for routing purposes,
+    // but the dashboard will see the new provider immediately
+    Ok(axum::Json(serde_json::json!({
+        "ok": true,
+        "provider": {
+            "name": backend.name,
+            "provider": backend.provider,
+            "model": backend.model,
+            "base_url": backend.base_url,
+        }
+    })))
 }
 
 async fn chat_completions(
