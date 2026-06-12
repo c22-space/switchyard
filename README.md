@@ -59,10 +59,6 @@ curl -X POST http://127.0.0.1:8420/v1/chat/completions \
   -d '{"model":"test","messages":[{"role":"user","content":"What is the weather in Tokyo?"}]}'
 ```
 
-## Status
-
-MVP routing engine works. Embedding + KNN routing matches Python spike results exactly (centroid similarity: 0.4121).
-
 ### What works
 - Config loading
 - Embedding model loading (fastembed, local ONNX)
