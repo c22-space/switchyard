@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Switchyard</title>
-    <link data-trunk rel="rust" data-wasm-opt="z" />
+    
+<script type="module">
+import init, * as bindings from '/switchyard-dashboard-ui-ad06f932e601d92c.js';
+const wasm = await init({ module_or_path: '/switchyard-dashboard-ui-ad06f932e601d92c_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
     <style>
     *{margin:0;padding:0;box-sizing:border-box}
     .hidden{display:none !important}
@@ -74,7 +85,7 @@
         if (b && typeof b.main === 'function') b.main();
     });
     </script>
-</head>
+<link rel="modulepreload" href="/switchyard-dashboard-ui-ad06f932e601d92c.js" crossorigin="anonymous" integrity="sha384-pDBt4upzE9BpTKxPUq6z0kU0I1NhSfzxHnDITHKuBZ2DzqykWJw1DSZFPef/5LXk"><link rel="preload" href="/switchyard-dashboard-ui-ad06f932e601d92c_bg.wasm" crossorigin="anonymous" integrity="sha384-7JkxWloMf3Y3v4+glKj5fKEwrpmGXCbekoMW4+nWmORcGVSaiSFdy9reb0cJjwns" as="fetch" type="application/wasm"></head>
 <body>
 </body>
 </html>

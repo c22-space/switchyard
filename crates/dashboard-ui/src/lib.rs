@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos_meta::*;
 use serde::Deserialize;
 use wasm_bindgen::JsCast;
 
@@ -127,9 +126,6 @@ fn Dashboard() -> impl IntoView {
     let (tab, set_tab) = signal(String::from("overview"));
 
     view! {
-        <Title text="Switchyard"/>
-        <Style>{CSS}</Style>
-
         <div class="app">
             <aside class="sidebar">
                 <div class="logo">"Switchyard"</div>
@@ -392,81 +388,4 @@ pub fn main() {
 
 // ── CSS ────────────────────────────────────────────────────────────────
 
-const CSS: &str = r#"
-*{margin:0;padding:0;box-sizing:border-box}
-.hidden{display:none !important}
-:root{
-  --bg:#09090b;--surface:#18181b;--surface2:#27272a;
-  --border:#3f3f46;--border2:#52525b;
-  --fg:#fafafa;--fg2:#a1a1aa;--fg3:#71717a;
-  --blue:#60a5fa;--green:#4ade80;--amber:#fbbf24;--red:#f87171;
-  --radius:10px;
-}
-html,body,#app{height:100%;width:100%}
-body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;-webkit-font-smoothing:antialiased}
 
-/* Layout */
-.app{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0}
-.logo{padding:0 24px 28px;font-size:16px;font-weight:700;color:var(--blue);letter-spacing:-.3px}
-.nav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
-.nav-btn{background:transparent;border:none;color:var(--fg2);padding:10px 16px;text-align:left;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;transition:all .12s}
-.nav-btn:hover{background:var(--surface2);color:var(--fg)}
-.nav-btn.active{background:var(--surface2);color:var(--fg)}
-
-/* Main */
-.main{flex:1;overflow-y:auto;padding:32px 40px}
-.page{max-width:1200px}
-.page-title{font-size:20px;font-weight:600;margin-bottom:24px;color:var(--fg)}
-.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-head .page-title{margin-bottom:0}
-
-/* Cards grid */
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.card-label{font-size:11px;color:var(--fg3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
-.card-value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
-.c-blue{color:var(--blue)}.c-green{color:var(--green)}.c-amber{color:var(--amber)}.c-red{color:var(--red)}
-
-.info-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.info-key{font-size:11px;color:var(--fg3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
-.info-val{font-size:14px;font-weight:500;color:var(--fg)}
-
-/* Tables */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.tbl{width:100%;border-collapse:collapse}
-.tbl th{background:var(--surface2);text-align:left;padding:12px 16px;font-size:11px;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;font-weight:500;border-bottom:1px solid var(--border)}
-.tbl td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px}
-.tbl tr:last-child td{border-bottom:0}
-.tbl tr:hover td{background:rgba(255,255,255,.02)}
-.dim{color:var(--fg2)}.strong{font-weight:500}.mono{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:12px}
-.prompt-cell{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg2)}
-.empty{text-align:center;color:var(--fg3);padding:40px 16px !important}
-
-/* Tags */
-.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;line-height:1.4}
-.tag-info{background:rgba(96,165,250,.12);color:var(--blue)}
-.tag-ok{background:rgba(74,222,128,.12);color:var(--green)}
-.tag-warn{background:rgba(251,191,36,.12);color:var(--amber)}
-.tag-err{background:rgba(248,113,113,.12);color:var(--red)}
-
-/* Buttons */
-.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .12s}
-.btn-add{background:var(--blue);color:#000;border-color:var(--blue)}
-.btn-add:hover{background:#93c5fd;border-color:#93c5fd}
-.btn-save{background:var(--green);color:#000}
-.btn-save:hover{background:#86efac}
-.btn-cancel{background:transparent;color:var(--fg2);border-color:var(--border)}
-.btn-cancel:hover{background:var(--surface2);color:var(--fg)}
-
-/* Config form */
-.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;display:none}
-.form-card.visible{display:block}
-.form-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
-.form-field label{display:block;font-size:11px;color:var(--fg3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
-.form-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--fg);font-size:13px;transition:border-color .12s}
-.form-field input::placeholder{color:var(--fg3)}
-.form-field input:focus{outline:none;border-color:var(--blue)}
-.form-btns{display:flex;gap:8px}
-"#;
