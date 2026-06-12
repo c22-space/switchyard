@@ -6,6 +6,11 @@ members = [
     "crates/cli",
 ]
 
+# dashboard-ui is built separately with trunk (targets wasm32)
+exclude = [
+    "crates/dashboard-ui",
+]
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"

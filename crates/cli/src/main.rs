@@ -106,7 +106,11 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         .with_state(route_state);
 
     // Build dashboard server
-    let dashboard_state = Arc::new(switchyard_dashboard::DashboardState { event_store });
+    let dist_dir = std::path::PathBuf::from("crates/dashboard-ui/dist");
+    let dashboard_state = Arc::new(switchyard_dashboard::DashboardState {
+        event_store,
+        dist_dir,
+    });
     let dashboard_app = switchyard_dashboard::routes(dashboard_state);
 
     // Start both servers
