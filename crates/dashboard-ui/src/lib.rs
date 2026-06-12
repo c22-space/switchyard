@@ -3,6 +3,8 @@ use leptos_meta::*;
 use serde::Deserialize;
 use wasm_bindgen::JsCast;
 
+const API_BASE: &str = "http://127.0.0.1:8420";
+
 #[derive(Deserialize, Clone, Debug)]
 pub struct RouteStats {
     pub total_routes: u64,
@@ -45,11 +47,13 @@ async fn fetch_json<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
 }
 
 async fn fetch_stats() -> Option<RouteStats> {
-    fetch_json("/api/stats").await
+    let url = format!("{}/api/stats", API_BASE);
+    fetch_json(&url).await
 }
 
 async fn fetch_routes() -> Vec<RouteEvent> {
-    fetch_json("/api/routes?limit=50").await.unwrap_or_default()
+    let url = format!("{}/api/routes?limit=50", API_BASE);
+    fetch_json(&url).await.unwrap_or_default()
 }
 
 #[component]
