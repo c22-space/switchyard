@@ -5,3 +5,5 @@
 .DS_Store
 .fastembed_cache/
 test.sh
+*.db
+switchyard.db

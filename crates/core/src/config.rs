@@ -6,6 +6,8 @@ pub struct Config {
     pub server: ServerConfig,
     pub router: RouterConfig,
     pub backends: Vec<Backend>,
+    #[serde(default)]
+    pub dashboard: DashboardConfig,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -19,23 +21,17 @@ pub struct ServerConfig {
 fn default_host() -> String {
     "127.0.0.1".to_string()
 }
+
 fn default_port() -> u16 {
     8420
 }
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct RouterConfig {
-    /// Embedding model name (fastembed compatible)
     pub embedding_model: String,
-
-    /// Routing threshold - below this, use fallback
     #[serde(default = "default_threshold")]
     pub threshold: f32,
-
-    /// Fallback backend name
     pub fallback: String,
-
-    /// Capability definitions with example prompts
     pub capabilities: Vec<Capability>,
 }
 
@@ -45,30 +41,50 @@ fn default_threshold() -> f32 {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Capability {
-    /// Category name (e.g., "tool_call", "general")
     pub name: String,
-
-    /// Example prompts that define this capability's centroid
     pub examples: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Backend {
-    /// Backend name (matches capability names or "fallback")
     pub name: String,
-
-    /// Provider type: "openai", "ollama", "openrouter"
     pub provider: String,
-
-    /// API base URL
     pub base_url: String,
-
-    /// API key (optional, for cloud providers)
     #[serde(default)]
     pub api_key: Option<String>,
-
-    /// Model name to use
     pub model: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct DashboardConfig {
+    #[serde(default = "default_enabled")]
+    pub enabled: bool,
+    #[serde(default = "default_db_path")]
+    pub db_path: String,
+    #[serde(default = "default_dashboard_port")]
+    pub port: u16,
+}
+
+fn default_enabled() -> bool {
+    true
+}
+
+fn default_db_path() -> String {
+    "switchyard.db".to_string()
+}
+
+fn default_dashboard_port() -> u16 {
+    8421
+}
+
+impl Default for DashboardConfig {
+    fn default() -> Self {
+        Self {
+            enabled: default_enabled(),
+            db_path: default_db_path(),
+            port: default_dashboard_port(),
+        }
+    }
 }
 
 impl Config {

@@ -1,0 +1,24 @@
+[package]
+name = "switchyard-cli"
+version.workspace = true
+edition.workspace = true
+description = "Switchyard CLI - status, config, routes, stats"
+
+[[bin]]
+name = "switchyard"
+path = "src/main.rs"
+
+[dependencies]
+switchyard-core = { workspace = true }
+switchyard-dashboard = { path = "../dashboard" }
+axum = { version = "0.8", features = ["macros"] }
+tower-http = { version = "0.6", features = ["cors"] }
+tokio = { workspace = true }
+reqwest = { version = "0.12", features = ["json"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive"] }
+colored = "2"
