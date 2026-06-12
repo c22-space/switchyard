@@ -21,7 +21,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Start the routing server + dashboard
+    /// Start the routing server
     Server,
 
     /// Show routing statistics
@@ -80,55 +80,32 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
         "  Routing server: {}:{}",
         config.server.host, config.server.port
     );
-    if config.dashboard.enabled {
-        println!(
-            "  Dashboard:      http://{}:{}",
-            config.server.host, config.dashboard.port
-        );
-    }
     println!();
 
-    // Build shared state for routing server
-    let route_state = Arc::new(RouteState {
+    let state = Arc::new(RouteState {
         router,
         config: config.clone(),
         http_client: reqwest::Client::new(),
-        event_store: event_store.clone(),
+        event_store,
     });
 
-    // Build routing server (OpenAI-compatible API)
-    let route_app = axum::Router::new()
+    let app = axum::Router::new()
         .route(
             "/v1/chat/completions",
             axum::routing::post(chat_completions),
         )
         .route("/health", axum::routing::post(health))
-        .with_state(route_state);
+        .route("/api/stats", axum::routing::get(route_stats))
+        .route("/api/routes", axum::routing::get(recent_routes))
+        .with_state(state);
 
-    // Build dashboard server
-    let dist_dir = std::path::PathBuf::from("crates/dashboard-ui/dist");
-    let dashboard_state = Arc::new(switchyard_dashboard::DashboardState {
-        event_store,
-        dist_dir,
-    });
-    let dashboard_app = switchyard_dashboard::routes(dashboard_state);
+    let addr = format!("{}:{}", config.server.host, config.server.port);
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
 
-    // Start both servers
-    let route_addr = format!("{}:{}", config.server.host, config.server.port);
-    let dashboard_addr = format!("{}:{}", config.server.host, config.dashboard.port);
+    println!("{}", "Server ready.".green().bold());
+    println!();
 
-    let route_listener = tokio::net::TcpListener::bind(&route_addr).await?;
-    let dashboard_listener = tokio::net::TcpListener::bind(&dashboard_addr).await?;
-
-    println!("{}", "Servers ready.".green().bold());
-
-    let route_server = axum::serve(route_listener, route_app);
-    let dashboard_server = axum::serve(dashboard_listener, dashboard_app);
-
-    tokio::select! {
-        result = route_server => { result?; }
-        result = dashboard_server => { result?; }
-    }
+    axum::serve(listener, app).await?;
 
     Ok(())
 }
@@ -162,7 +139,38 @@ struct ChatMessage {
 }
 
 async fn health() -> impl axum::response::IntoResponse {
-    axum::Json(serde_json::json!({"status": "ok"}))
+    axum::Json(serde_json::json!({ "status": "ok" }))
+}
+
+#[derive(serde::Deserialize)]
+struct RouteQuery {
+    #[serde(default = "default_limit")]
+    limit: u32,
+}
+
+fn default_limit() -> u32 {
+    50
+}
+
+async fn recent_routes(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+    axum::extract::Query(query): axum::extract::Query<RouteQuery>,
+) -> Result<axum::Json<Vec<switchyard_core::event::RouteEvent>>, axum::http::StatusCode> {
+    state
+        .event_store
+        .recent_routes(query.limit)
+        .map(axum::Json)
+        .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+async fn route_stats(
+    axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
+) -> Result<axum::Json<switchyard_core::event::RouteStats>, axum::http::StatusCode> {
+    state
+        .event_store
+        .stats()
+        .map(axum::Json)
+        .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 async fn chat_completions(
@@ -447,16 +455,6 @@ fn cmd_config_show(config_path: &PathBuf) -> Result<()> {
         );
     }
     println!();
-    println!(
-        "  {} {} (port {})",
-        "Dashboard:".dimmed(),
-        if config.dashboard.enabled {
-            "enabled".green()
-        } else {
-            "disabled".red()
-        },
-        config.dashboard.port
-    );
     println!("  {} {}", "DB Path:".dimmed(), config.dashboard.db_path);
 
     Ok(())

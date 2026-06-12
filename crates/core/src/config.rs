@@ -57,32 +57,18 @@ pub struct Backend {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct DashboardConfig {
-    #[serde(default = "default_enabled")]
-    pub enabled: bool,
     #[serde(default = "default_db_path")]
     pub db_path: String,
-    #[serde(default = "default_dashboard_port")]
-    pub port: u16,
-}
-
-fn default_enabled() -> bool {
-    true
 }
 
 fn default_db_path() -> String {
     "switchyard.db".to_string()
 }
 
-fn default_dashboard_port() -> u16 {
-    8421
-}
-
 impl Default for DashboardConfig {
     fn default() -> Self {
         Self {
-            enabled: default_enabled(),
             db_path: default_db_path(),
-            port: default_dashboard_port(),
         }
     }
 }
