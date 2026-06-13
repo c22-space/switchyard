@@ -22,14 +22,18 @@
             "provider": "opencode-go",
             "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
             "api_key": null,
-            "model": "deepseek-v4-flash"
+            "model": "deepseek-v4-flash",
+            "cost_per_1m_input_tokens": 0.14,
+            "cost_per_1m_output_tokens": 0.28
         },
         {
             "name": "general",
             "provider": "opencode-go",
             "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
             "api_key": null,
-            "model": "mimo-v2.5"
+            "model": "mimo-v2.5",
+            "cost_per_1m_input_tokens": 0.14,
+            "cost_per_1m_output_tokens": 0.28
         }
     ]
 }

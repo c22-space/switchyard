@@ -5,6 +5,12 @@ members = [
     "crates/cli",
 ]
 
+[profile.release]
+lto = true
+strip = true
+opt-level = 3
+codegen-units = 1
+
 # dashboard-ui is built separately with trunk (targets wasm32)
 exclude = [
     "crates/dashboard-ui",

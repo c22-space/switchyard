@@ -19,7 +19,7 @@ const SEED_CONFIDENCE: f32 = 1.0;
 /// Seed examples for cold start. Used only when the vector store is empty.
 fn seed_examples() -> Vec<(&'static str, &'static str)> {
     vec![
-        // tool_call seeds
+        // ── tool_call: imperative, action-oriented queries ──
         ("search the web for latest news", "tool_call"),
         ("get the current weather in New York", "tool_call"),
         ("send an email to john@example.com", "tool_call"),
@@ -28,24 +28,27 @@ fn seed_examples() -> Vec<(&'static str, &'static str)> {
         ("is the server up?", "tool_call"),
         ("what processes are using the most memory?", "tool_call"),
         ("how much diskspace is free?", "tool_call"),
-        ("check the status of my order", "tool_call"),
         ("fetch data from the REST API endpoint", "tool_call"),
         ("query the database for all active users", "tool_call"),
-        ("download the file from this URL", "tool_call"),
+        ("check the status of my order", "tool_call"),
         ("monitor the CPU usage of the server", "tool_call"),
         ("what's running on port 8080?", "tool_call"),
-        ("how many users are in the database?", "tool_call"),
-        // general seeds
+        // ── general: reasoning, analysis, meta-discussion ──
+        ("here are my thoughts on the routing approach", "general"),
+        ("how can we optimize this for budget?", "general"),
+        ("I think the caching strategy should be different", "general"),
+        ("what do you think about adding prompt compression?", "general"),
+        ("that categorised as tool_call doesn't make sense", "general"),
+        ("let me explain why I think this approach is wrong", "general"),
+        ("can you list the pros and cons of using qdrant here?", "general"),
         ("what's the capital of France?", "general"),
-        ("how are you doing today?", "general"),
         ("tell me a fun fact about space", "general"),
         ("write a Python function to sort a list", "general"),
         ("explain quantum physics simply", "general"),
-        ("what's the meaning of life?", "general"),
         ("tell me a joke", "general"),
-        ("write a short story about a dragon", "general"),
         ("compare the pros and cons of React vs Vue", "general"),
         ("how do I make good coffee?", "general"),
+        ("why did my query go to fallback?", "general"),
     ]
 }
 

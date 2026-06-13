@@ -54,6 +54,10 @@ pub struct Backend {
     #[serde(default)]
     pub api_key: Option<String>,
     pub model: String,
+    #[serde(default)]
+    pub cost_per_1m_input_tokens: f64,
+    #[serde(default)]
+    pub cost_per_1m_output_tokens: f64,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
