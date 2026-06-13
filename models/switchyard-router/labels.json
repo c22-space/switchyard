@@ -28,5 +28,15 @@
     "10": "tool_call",
     "11": "translation",
     "12": "vision"
+  },
+  "complexity2id": {
+    "low": 0,
+    "medium": 1,
+    "high": 2
+  },
+  "id2complexity": {
+    "0": "low",
+    "1": "medium",
+    "2": "high"
   }
 }
