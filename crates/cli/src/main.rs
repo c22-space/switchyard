@@ -7,6 +7,7 @@ use std::sync::Arc;
 use switchyard_core::config::Config;
 use switchyard_core::event::EventStore;
 use switchyard_core::router::Router;
+use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
 
 #[derive(Parser)]
@@ -70,11 +71,13 @@ async fn main() -> Result<()> {
 
 async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     let config = Config::load(config_path)?;
-    let router = Router::new(&config)?;
 
     // Initialize event store
     let db_path = std::path::Path::new(&config.dashboard.db_path);
     let event_store = EventStore::new(db_path)?;
+
+    // Initialize k-NN router with vector store
+    let router = Router::new(&config, db_path)?;
 
     // Resolve .env path (same directory as config file)
     let env_path = config_path
@@ -90,7 +93,7 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     println!();
 
     let state = Arc::new(RouteState {
-        router,
+        router: Mutex::new(router),
         config: config.clone(),
         config_path: config_path.clone(),
         env_path,
@@ -134,7 +137,7 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
 // ── Route state and handlers ───────────────────────────────────────────
 
 struct RouteState {
-    router: Router,
+    router: Mutex<Router>,
     config: Config,
     config_path: PathBuf,
     env_path: PathBuf,
@@ -200,6 +203,10 @@ async fn overview(
     axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
 ) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
     let stats = state.event_store.stats().map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    let example_count = {
+        let router = state.router.lock().await;
+        router.example_count().unwrap_or(0)
+    };
     Ok(axum::Json(serde_json::json!({
         "stats": stats,
         "backends": state.config.backends.len(),
@@ -207,6 +214,7 @@ async fn overview(
         "embedding_model": state.config.router.embedding_model,
         "threshold": state.config.router.threshold,
         "fallback": state.config.router.fallback,
+        "example_count": example_count,
     })))
 }
 
@@ -421,10 +429,20 @@ async fn chat_completions(
         .unwrap_or("");
 
     let start = std::time::Instant::now();
-    let route = state.router.route(prompt).map_err(|e| {
-        tracing::error!("Routing failed: {}", e);
-        axum::http::StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+    let route = {
+        let mut router = state.router.lock().await;
+        let r = router.route(prompt).map_err(|e| {
+            tracing::error!("Routing failed: {}", e);
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+        // Store the example for future k-NN (only if confidently classified)
+        if !r.is_fallback {
+            if let Err(e) = router.store_example(prompt, &r.category, r.score) {
+                tracing::warn!("Failed to store routing example: {}", e);
+            }
+        }
+        r
+    };
     let latency_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     let backend = state
@@ -459,7 +477,7 @@ async fn chat_completions(
     let api_key = load_backend_key(&state.env_path, &backend.name);
 
     // Forward to backend
-    let url = format!("{}/v1/chat/completions", backend.base_url);
+    let url = backend.base_url.clone();
     let mut body = serde_json::to_value(&request)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
     body["model"] = serde_json::Value::String(backend.model.clone());
@@ -486,12 +504,12 @@ async fn chat_completions(
     })?;
 
     let status = resp.status();
-    let body = resp
-        .text()
-        .await
-        .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
 
     if !status.is_success() {
+        let body = resp
+            .text()
+            .await
+            .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
         let _ = state.event_store.log_route(
             prompt,
             &route.category,
@@ -509,17 +527,42 @@ async fn chat_completions(
         );
     }
 
-    let mut response: serde_json::Value =
-        serde_json::from_str(&body).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    // Streaming response - forward raw bytes from upstream (already SSE-formatted)
+    if request.stream {
+        use futures_util::StreamExt;
 
-    response["switchyard_route"] = serde_json::json!({
-        "category": route.category,
-        "score": route.score,
-        "is_fallback": route.is_fallback,
-        "backend": backend.name,
-    });
+        let stream = resp.bytes_stream();
+        let body = axum::body::Body::from_stream(stream.map(|result| {
+            result.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
+        }));
 
-    Ok(axum::Json(response).into_response())
+        let response = axum::response::Response::builder()
+            .header("content-type", "text/event-stream")
+            .header("cache-control", "no-cache")
+            .header("connection", "keep-alive")
+            .body(body)
+            .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        Ok(response)
+    } else {
+        // Non-streaming response
+        let body = resp
+            .text()
+            .await
+            .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
+
+        let mut response: serde_json::Value =
+            serde_json::from_str(&body).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        response["switchyard_route"] = serde_json::json!({
+            "category": route.category,
+            "score": route.score,
+            "is_fallback": route.is_fallback,
+            "backend": backend.name,
+        });
+
+        Ok(axum::Json(response).into_response())
+    }
 }
 
 // ── CLI commands ───────────────────────────────────────────────────────
@@ -672,9 +715,8 @@ fn cmd_config_show(config_path: &PathBuf) -> Result<()> {
     );
     for cap in &config.router.capabilities {
         println!(
-            "    - {} ({} examples)",
+            "    - {}",
             cap.name.bold(),
-            cap.examples.len()
         );
     }
     println!();

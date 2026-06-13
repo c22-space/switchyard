@@ -9,3 +9,4 @@ test.sh
 switchyard.db
 crates/dashboard-ui/target/
 .env
+vector_store/

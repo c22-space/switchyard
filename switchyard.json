@@ -1,89 +1,35 @@
 {
-  "server": {
-    "host": "127.0.0.1",
-    "port": 4855
-  },
-  "router": {
-    "embedding_model": "all-MiniLM-L6-v2",
-    "threshold": 0.25,
-    "fallback": "general",
-    "capabilities": [
-      {
-        "name": "tool_call",
-        "examples": [
-          "Search the web for latest news about AI",
-          "Get the current weather in New York",
-          "Send an email to john@example.com",
-          "Look up the stock price of Apple",
-          "Create a calendar event for tomorrow at 3pm",
-          "Fetch data from the REST API endpoint",
-          "Call the database to get user records",
-          "Set a reminder for 5pm today",
-          "Translate this text to French using the translation API",
-          "Calculate the distance between two cities",
-          "Check if the server is running on port 8080",
-          "Download the file from this URL",
-          "Post a message to the Slack channel",
-          "Query the database for all active users",
-          "Update the record in the database",
-          "Delete the file from the cloud storage",
-          "Monitor the CPU usage of the server",
-          "Resize the image to 800x600",
-          "Compress the video file",
-          "Convert the PDF to text",
-          "Look up the definition of this word",
-          "Find nearby restaurants",
-          "Book a flight from NYC to London",
-          "Order groceries for delivery",
-          "Check the status of my order"
-        ]
-      },
-      {
-        "name": "general",
-        "examples": [
-          "What's the capital of France?",
-          "How are you doing today?",
-          "Tell me a fun fact about space",
-          "Write a Python function to sort a list",
-          "Debug this JavaScript code that throws an error",
-          "Create a React component for a login form",
-          "Write a short story about a dragon",
-          "Create a poem about the ocean",
-          "Write a blog post about machine learning",
-          "Analyze the trends in this sales data",
-          "Compare the pros and cons of React vs Vue",
-          "Break down the causes of the 2008 financial crisis",
-          "Explain quantum physics simply",
-          "What's the meaning of life?",
-          "Tell me a joke",
-          "Write SQL queries to join two tables",
-          "Generate a Dockerfile for a Node.js app",
-          "Create a marketing email for a new product",
-          "Write a screenplay scene with dialogue",
-          "Evaluate the risks of this business proposal",
-          "What's the difference between AI and ML?",
-          "How do I make good coffee?",
-          "Write a haiku about winter",
-          "Assess the competitive landscape of the EV market",
-          "Explain the implications of this policy change"
-        ]
-      }
-    ]
-  },
-  "backends": [
-    {
-      "name": "tool_call",
-      "provider": "openrouter",
-      "base_url": "https://openrouter.ai/api",
-      "api_key": null,
-      "model": "anthropic/claude-sonnet-4"
+    "server": {
+        "host": "127.0.0.1",
+        "port": 4855
     },
-    {
-      "name": "general",
-      "provider": "ollama",
-      "base_url": "http://localhost:11434",
-      "api_key": null,
-      "model": "llama3.1"
-    }
-  ]
+    "router": {
+        "embedding_model": "all-MiniLM-L6-v2",
+        "threshold": 0.25,
+        "fallback": "general",
+        "capabilities": [
+            {
+                "name": "tool_call"
+            },
+            {
+                "name": "general"
+            }
+        ]
+    },
+    "backends": [
+        {
+            "name": "tool_call",
+            "provider": "opencode-go",
+            "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
+            "api_key": null,
+            "model": "deepseek-v4-flash"
+        },
+        {
+            "name": "general",
+            "provider": "opencode-go",
+            "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
+            "api_key": null,
+            "model": "mimo-v2.5"
+        }
+    ]
 }
