@@ -1,0 +1,713 @@
+{"text": "How does a load balancer distribute traffic across servers", "label": "general", "complexity": "medium"}
+{"text": "What is the purpose of a reverse proxy", "label": "general", "complexity": "low"}
+{"text": "How does JWT authentication work", "label": "general", "complexity": "medium"}
+{"text": "What is the difference between TCP and UDP", "label": "general", "complexity": "low"}
+{"text": "How does the Linux kernel schedule processes", "label": "general", "complexity": "high"}
+{"text": "What is a webhook and when would you use one", "label": "general", "complexity": "medium"}
+{"text": "How does end-to-end encryption work", "label": "general", "complexity": "high"}
+{"text": "What is the publish-subscribe pattern", "label": "general", "complexity": "medium"}
+{"text": "How does a CDN cache invalidate stale content", "label": "general", "complexity": "medium"}
+{"text": "What is a deadlock in concurrent programming", "label": "general", "complexity": "medium"}
+{"text": "How does a Redis sorted set work", "label": "general", "complexity": "medium"}
+{"text": "What is the difference between a thread and a green thread", "label": "general", "complexity": "high"}
+{"text": "How does DNS over HTTPS differ from traditional DNS", "label": "general", "complexity": "medium"}
+{"text": "What is a sidecar pattern in microservices", "label": "general", "complexity": "medium"}
+{"text": "How does the Spanner database achieve external consistency", "label": "general", "complexity": "high"}
+{"text": "What is consistent hashing and why is it useful", "label": "general", "complexity": "high"}
+{"text": "How does connection pooling improve database performance", "label": "general", "complexity": "medium"}
+{"text": "What is the saga pattern for distributed transactions", "label": "general", "complexity": "high"}
+{"text": "How does a Bloom filter achieve space efficiency", "label": "general", "complexity": "high"}
+{"text": "What is the Strangler Fig pattern for migrations", "label": "general", "complexity": "high"}
+{"text": "How does a message broker handle poison pills", "label": "general", "complexity": "high"}
+{"text": "What is write-through vs write-behind caching", "label": "general", "complexity": "medium"}
+{"text": "How does the Raft protocol elect a leader", "label": "general", "complexity": "high"}
+{"text": "What is the difference between a monolith and a modular monolith", "label": "general", "complexity": "medium"}
+{"text": "How does gRPC handle bidirectional streaming", "label": "general", "complexity": "high"}
+{"text": "What is the circuit breaker pattern and when to use it", "label": "general", "complexity": "medium"}
+{"text": "How does automatic garbage collection work in the JVM", "label": "general", "complexity": "high"}
+{"text": "What is the CQRS pattern and when should you use it", "label": "general", "complexity": "high"}
+{"text": "How does a vector database perform similarity search", "label": "general", "complexity": "high"}
+{"text": "What is the difference between idempotency and immutability", "label": "general", "complexity": "medium"}
+{"text": "Write a quicksort algorithm in Python", "label": "code", "complexity": "medium"}
+{"text": "Write a Go function that implements a worker pool", "label": "code", "complexity": "high"}
+{"text": "Create a React hook for window resize events", "label": "code", "complexity": "medium"}
+{"text": "Write a Python async context manager for database connections", "label": "code", "complexity": "high"}
+{"text": "Implement a binary search in Rust", "label": "code", "complexity": "medium"}
+{"text": "Write a bash script to parse nginx access logs", "label": "code", "complexity": "medium"}
+{"text": "Create a TypeScript generic linked list class", "label": "code", "complexity": "high"}
+{"text": "Write a Python data validation function using Pydantic", "label": "code", "complexity": "medium"}
+{"text": "Implement a trie data structure in Go", "label": "code", "complexity": "high"}
+{"text": "Write a React component that implements infinite scrolling", "label": "code", "complexity": "high"}
+{"text": "Create a Python function that generates random passwords", "label": "code", "complexity": "low"}
+{"text": "Write a Rust struct implementing the Newtype pattern", "label": "code", "complexity": "high"}
+{"text": "Implement a priority queue using a heap in Python", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript type that extracts all string literal unions", "label": "code", "complexity": "high"}
+{"text": "Create a Docker Compose file for a three-tier application", "label": "code", "complexity": "high"}
+{"text": "Write a Python decorator for caching function results", "label": "code", "complexity": "medium"}
+{"text": "Implement a linked list with insert and delete in C", "label": "code", "complexity": "high"}
+{"text": "Write a Go channel-based fan-out pattern", "label": "code", "complexity": "high"}
+{"text": "Create a SQL query that finds duplicate records", "label": "code", "complexity": "medium"}
+{"text": "Write a Python generator that yields Fibonacci numbers", "label": "code", "complexity": "low"}
+{"text": "Implement a simple HTTP server in Rust using actix", "label": "code", "complexity": "high"}
+{"text": "Write a shell script that monitors disk usage and alerts", "label": "code", "complexity": "medium"}
+{"text": "Create a Python class for managing a connection pool", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript utility type that makes all props required except some", "label": "code", "complexity": "high"}
+{"text": "Implement a red-black tree in Python", "label": "code", "complexity": "high"}
+{"text": "Write a Go function that implements exponential backoff retry", "label": "code", "complexity": "medium"}
+{"text": "Create a Python script that reads CSV and inserts into PostgreSQL", "label": "code", "complexity": "medium"}
+{"text": "Write a Kubernetes CronJob manifest that runs a backup daily", "label": "code", "complexity": "medium"}
+{"text": "Implement a concurrent-safe cache in Go using sync.Map", "label": "code", "complexity": "high"}
+{"text": "Write a Python class that implements the Observer pattern", "label": "code", "complexity": "medium"}
+{"text": "Create a Terraform module for a VPC with public and private subnets", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript function that deeply clones an object", "label": "code", "complexity": "medium"}
+{"text": "Run the unit test suite and report pass/fail counts", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the container logs from the API service", "label": "tool_call", "complexity": "low"}
+{"text": "Check the current memory usage of the Node.js process", "label": "tool_call", "complexity": "low"}
+{"text": "Run the linter on the Python source files", "label": "tool_call", "complexity": "low"}
+{"text": "Get the list of open TCP connections on port 443", "label": "tool_call", "complexity": "low"}
+{"text": "Check the disk I/O stats on the database server", "label": "tool_call", "complexity": "low"}
+{"text": "Run a speed test to measure network bandwidth", "label": "tool_call", "complexity": "low"}
+{"text": "Get the current load average for the server", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Kubernetes pod restart count in the last hour", "label": "tool_call", "complexity": "low"}
+{"text": "Run the database migration status check", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the Prometheus metrics for the API endpoint latency", "label": "tool_call", "complexity": "low"}
+{"text": "Check the SSL certificate expiration date for the domain", "label": "tool_call", "complexity": "low"}
+{"text": "Run the security vulnerability scan on npm packages", "label": "tool_call", "complexity": "medium"}
+{"text": "Get the list of running Docker containers", "label": "tool_call", "complexity": "low"}
+{"text": "Check the PostgreSQL connection pool utilization", "label": "tool_call", "complexity": "low"}
+{"text": "Run the integration test suite against staging", "label": "tool_call", "complexity": "medium"}
+{"text": "Pull the last 50 lines of the application error log", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Kubernetes node resource utilization", "label": "tool_call", "complexity": "low"}
+{"text": "Run the code formatter on the entire codebase", "label": "tool_call", "complexity": "low"}
+{"text": "Get the git diff between main and the current branch", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Redis memory usage and key count", "label": "tool_call", "complexity": "low"}
+{"text": "Run a traceroute to the production API endpoint", "label": "tool_call", "complexity": "low"}
+{"text": "Get the CPU usage breakdown by process", "label": "tool_call", "complexity": "low"}
+{"text": "Check the number of pending messages in the queue", "label": "tool_call", "complexity": "low"}
+{"text": "Run the type checker on the TypeScript project", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the deployment history for the last 7 days", "label": "tool_call", "complexity": "low"}
+{"text": "Check the system entropy for cryptographic operations", "label": "tool_call", "complexity": "low"}
+{"text": "Run the end-to-end tests against the production environment", "label": "tool_call", "complexity": "medium"}
+{"text": "Get the network interface statistics", "label": "tool_call", "complexity": "low"}
+{"text": "Check the swap usage on all cluster nodes", "label": "tool_call", "complexity": "low"}
+{"text": "Extract all environment variables from the running container", "label": "extraction", "complexity": "low"}
+{"text": "Pull the SQL table names from the database schema dump", "label": "extraction", "complexity": "low"}
+{"text": "Extract the function signatures from the Python module", "label": "extraction", "complexity": "low"}
+{"text": "Pull all HTTP status codes from the API response log", "label": "extraction", "complexity": "low"}
+{"text": "Extract the package versions from the lock file", "label": "extraction", "complexity": "low"}
+{"text": "Pull the column definitions from this TypeScript interface", "label": "extraction", "complexity": "low"}
+{"text": "Extract all regex patterns from the validation code", "label": "extraction", "complexity": "medium"}
+{"text": "Pull the domain names from the CORS configuration", "label": "extraction", "complexity": "low"}
+{"text": "Extract all API path parameters from the route definitions", "label": "extraction", "complexity": "low"}
+{"text": "Pull the numeric thresholds from the alerting rules", "label": "extraction", "complexity": "low"}
+{"text": "Extract the feature flags from the configuration file", "label": "extraction", "complexity": "low"}
+{"text": "Pull the timestamp values from the audit trail", "label": "extraction", "complexity": "medium"}
+{"text": "Extract all CSS class names from the component template", "label": "extraction", "complexity": "low"}
+{"text": "Pull the database connection parameters from the config", "label": "extraction", "complexity": "low"}
+{"text": "Extract the Kubernetes resource limits from the pod spec", "label": "extraction", "complexity": "low"}
+{"text": "Pull all git remote URLs from the repository config", "label": "extraction", "complexity": "low"}
+{"text": "Extract the error message templates from the exception handler", "label": "extraction", "complexity": "low"}
+{"text": "Pull the port numbers from the docker-compose services", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the annotation markers from the source code", "label": "extraction", "complexity": "low"}
+{"text": "Pull the user roles from the access control configuration", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the S3 bucket names from the infrastructure code", "label": "extraction", "complexity": "low"}
+{"text": "Pull the latency measurements from the benchmark output", "label": "extraction", "complexity": "medium"}
+{"text": "Extract the database table relationships from the ER diagram code", "label": "extraction", "complexity": "medium"}
+{"text": "Pull all the webhook URLs from the event handler registrations", "label": "extraction", "complexity": "low"}
+{"text": "Extract the service account names from the Kubernetes manifests", "label": "extraction", "complexity": "low"}
+{"text": "Pull the encryption algorithm names from the security config", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the HTTP header names from the middleware chain", "label": "extraction", "complexity": "low"}
+{"text": "Pull the resource names from the Terraform state file", "label": "extraction", "complexity": "medium"}
+{"text": "Extract the test assertion patterns from the test suite", "label": "extraction", "complexity": "medium"}
+{"text": "Pull the log format specifiers from the logging configuration", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the IP allowlist entries from the firewall rules", "label": "extraction", "complexity": "low"}
+{"text": "What did the team agree on during the architecture review", "label": "memory", "complexity": "medium"}
+{"text": "Remember the database password for the staging environment", "label": "memory", "complexity": "low"}
+{"text": "What was the root cause of the outage last Wednesday", "label": "memory", "complexity": "high"}
+{"text": "What did we decide about the caching strategy for the API", "label": "memory", "complexity": "medium"}
+{"text": "Remember the JIRA ticket for the authentication bug", "label": "memory", "complexity": "low"}
+{"text": "What was the agreed-upon maximum response time for the endpoint", "label": "memory", "complexity": "low"}
+{"text": "What did the security review team recommend", "label": "memory", "complexity": "high"}
+{"text": "Remember the deployment window for the database migration", "label": "memory", "complexity": "low"}
+{"text": "What was the conclusion from the load testing exercise", "label": "memory", "complexity": "medium"}
+{"text": "What did we agree on for the error notification recipients", "label": "memory", "complexity": "low"}
+{"text": "Remember the API version number for the breaking change", "label": "memory", "complexity": "low"}
+{"text": "What was the outcome of the vendor evaluation", "label": "memory", "complexity": "medium"}
+{"text": "What did the product owner say about the feature priorities", "label": "memory", "complexity": "medium"}
+{"text": "Remember the connection string for the analytics database", "label": "memory", "complexity": "low"}
+{"text": "What was the agreed-upon code review turnaround time", "label": "memory", "complexity": "low"}
+{"text": "What did the incident response team find", "label": "memory", "complexity": "high"}
+{"text": "Remember the name of the new feature flag", "label": "memory", "complexity": "low"}
+{"text": "What was the conclusion from the performance analysis", "label": "memory", "complexity": "medium"}
+{"text": "What did we say about the log retention policy", "label": "memory", "complexity": "medium"}
+{"text": "Remember the staging server IP address", "label": "memory", "complexity": "low"}
+{"text": "What was the result of the penetration test", "label": "memory", "complexity": "high"}
+{"text": "What did the team decide about the CI pipeline changes", "label": "memory", "complexity": "medium"}
+{"text": "Remember the date for the next production deployment", "label": "memory", "complexity": "low"}
+{"text": "What was the approved budget for the new infrastructure", "label": "memory", "complexity": "medium"}
+{"text": "What did we discuss about the database indexing strategy", "label": "memory", "complexity": "medium"}
+{"text": "Extract the text from this error message screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the numbers from this performance chart", "label": "vision", "complexity": "low"}
+{"text": "What does this architecture diagram show", "label": "vision", "complexity": "medium"}
+{"text": "Describe the network topology in this diagram", "label": "vision", "complexity": "high"}
+{"text": "Read the data from this monitoring dashboard screenshot", "label": "vision", "complexity": "medium"}
+{"text": "What does this CI failure screenshot show", "label": "vision", "complexity": "low"}
+{"text": "Extract the table data from this database query result image", "label": "vision", "complexity": "medium"}
+{"text": "Describe what the Kubernetes pod status shows in this terminal screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the error codes from this crash report screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does this traffic graph indicate about the spike", "label": "vision", "complexity": "medium"}
+{"text": "Identify the failing component in this system diagram", "label": "vision", "complexity": "medium"}
+{"text": "Read the configuration values from this settings screenshot", "label": "vision", "complexity": "low"}
+{"text": "Describe the deployment pipeline shown in this flowchart", "label": "vision", "complexity": "high"}
+{"text": "What does the memory usage graph show over the last 24 hours", "label": "vision", "complexity": "medium"}
+{"text": "Extract the file paths from this directory listing screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the API response from this Postman screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does the database query plan explain output show", "label": "vision", "complexity": "high"}
+{"text": "Describe the state machine diagram in this image", "label": "vision", "complexity": "high"}
+{"text": "Read the version numbers from this npm install output screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does the load test results chart show", "label": "vision", "complexity": "medium"}
+{"text": "Extract the column names from this database table screenshot", "label": "vision", "complexity": "low"}
+{"text": "Describe the error boundary in this React DevTools screenshot", "label": "vision", "complexity": "medium"}
+{"text": "Read the git log output from this terminal screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does the Docker stats output show about container resource usage", "label": "vision", "complexity": "medium"}
+{"text": "Identify the bottleneck in this profiling flame graph", "label": "vision", "complexity": "high"}
+{"text": "Summarize the key points from this architecture review", "label": "summarization", "complexity": "medium"}
+{"text": "Give me a brief overview of this incident report", "label": "summarization", "complexity": "medium"}
+{"text": "Condense this API documentation to the essentials", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the performance benchmark results", "label": "summarization", "complexity": "medium"}
+{"text": "Give me the TLDR of this RFC document", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the differences between these three database options", "label": "summarization", "complexity": "high"}
+{"text": "Condense this sprint retrospective into action items", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the security audit findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me a one-paragraph summary of the system architecture", "label": "summarization", "complexity": "low"}
+{"text": "Summarize the user feedback from the latest release", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the deployment runbook to the critical steps", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the cost analysis for the cloud migration", "label": "summarization", "complexity": "high"}
+{"text": "Give me the highlights from this quarter's engineering report", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the test results from the regression suite", "label": "summarization", "complexity": "medium"}
+{"text": "Condense this postmortem into a one-page summary", "label": "summarization", "complexity": "high"}
+{"text": "Summarize the comparison between the two monitoring tools", "label": "summarization", "complexity": "medium"}
+{"text": "Give me a quick summary of each open pull request", "label": "summarization", "complexity": "low"}
+{"text": "Summarize the database migration plan", "label": "summarization", "complexity": "medium"}
+{"text": "Condense this error analysis into a root cause summary", "label": "summarization", "complexity": "high"}
+{"text": "Summarize the load test findings and recommendations", "label": "summarization", "complexity": "high"}
+{"text": "Give me a summary of the infrastructure changes this month", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the key risks identified in the risk assessment", "label": "summarization", "complexity": "high"}
+{"text": "Condense the vendor comparison matrix into a recommendation", "label": "summarization", "complexity": "high"}
+{"text": "Summarize the database schema changes for the new feature", "label": "summarization", "complexity": "medium"}
+{"text": "Give me the executive summary of the compliance review", "label": "summarization", "complexity": "high"}
+{"text": "Summarize the differences in performance across the three regions", "label": "summarization", "complexity": "high"}
+{"text": "Condense the customer support tickets into the top 5 issues", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the feature usage statistics from the analytics dashboard", "label": "summarization", "complexity": "medium"}
+{"text": "Write a story about a deployment that went wrong at midnight", "label": "creative", "complexity": "medium"}
+{"text": "Compose a haiku about a successful database migration", "label": "creative", "complexity": "low"}
+{"text": "Write a parody song about pull request reviews", "label": "creative", "complexity": "medium"}
+{"text": "Create a mock interview with a production database", "label": "creative", "complexity": "medium"}
+{"text": "Write a satirical review of YAML configuration files", "label": "creative", "complexity": "medium"}
+{"text": "Compose a limerick about a broken CI pipeline", "label": "creative", "complexity": "low"}
+{"text": "Write a motivational speech for a failing deployment", "label": "creative", "complexity": "low"}
+{"text": "Create a comic strip script about debugging production", "label": "creative", "complexity": "medium"}
+{"text": "Write a love letter from a developer to their IDE", "label": "creative", "complexity": "low"}
+{"text": "Compose a haiku collection about different error types", "label": "creative", "complexity": "low"}
+{"text": "Write a noir detective story about finding a memory leak", "label": "creative", "complexity": "high"}
+{"text": "Create a mock press release for a new API version", "label": "creative", "complexity": "medium"}
+{"text": "Write a toast at the launch party for the new microservice", "label": "creative", "complexity": "low"}
+{"text": "Compose a children's rhyme about what an API key does", "label": "creative", "complexity": "low"}
+{"text": "Write a dramatic reading of a Kubernetes event log", "label": "creative", "complexity": "medium"}
+{"text": "Create a fake FAQ for dealing with legacy code", "label": "creative", "complexity": "medium"}
+{"text": "Write a newspaper headline about a zero-downtime migration", "label": "creative", "complexity": "low"}
+{"text": "Compose a motivational quote for an SRE team", "label": "creative", "complexity": "low"}
+{"text": "Write a fable about a cache that learned to invalidate itself", "label": "creative", "complexity": "medium"}
+{"text": "Create a satirical blog post about microservices overhead", "label": "creative", "complexity": "medium"}
+{"text": "Turn this error report into a structured JSON incident payload", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON schema for a webhook delivery object", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a JSON config for the feature flag rollout", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this meeting notes into a structured JSON action list", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of this approval workflow", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON payload for the batch import endpoint", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this deployment checklist into structured JSON runbook", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON config for the multi-region routing rules", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON diff of the two configuration versions", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this free-form incident timeline into structured JSON", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the service dependency graph", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON alert rule from this monitoring description", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this spreadsheet data into a typed JSON array", "label": "structured_output", "complexity": "low"}
+{"text": "Create a JSON template for standardized API error responses", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON representation of this permission matrix", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this natural language requirement into JSON acceptance criteria", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON config for the rate limiting tiers", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON payload for the analytics event", "label": "structured_output", "complexity": "low"}
+{"text": "Turn this dependency list into a structured JSON manifest", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the database migration plan", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON template for the pull request template", "label": "structured_output", "complexity": "low"}
+{"text": "Turn this incident report into structured JSON with severity and timeline", "label": "structured_output", "complexity": "high"}
+{"text": "Create a JSON config for the notification routing rules", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON schema for validating the API request body", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this code review feedback into structured JSON comments", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the state machine for the order flow", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON config for the load balancer health checks", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this error classification description into a JSON taxonomy", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON payload for the batch email notification endpoint", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON representation of the access control policy", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this hand-drawn wireframe description into JSON component specs", "label": "structured_output", "complexity": "high"}
+{"text": "Create a JSON template for the deployment approval request", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON config for the cache invalidation rules", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this plain-text API documentation into an OpenAPI spec", "label": "structured_output", "complexity": "high"}
+{"text": "Create a JSON representation of the escalation policy", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON payload for the webhook retry configuration", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this customer feedback into structured JSON sentiment data", "label": "structured_output", "complexity": "medium"}
+{"text": "Search for best practices on implementing rate limiting with Redis", "label": "search", "complexity": "medium"}
+{"text": "Look up how to set up distributed tracing with OpenTelemetry in Go", "label": "search", "complexity": "high"}
+{"text": "Find benchmarks comparing Cloudflare Workers vs Deno Deploy", "label": "search", "complexity": "medium"}
+{"text": "Search for examples of implementing the Outbox pattern with Kafka", "label": "search", "complexity": "high"}
+{"text": "Look up how to configure PgBouncer for connection pooling with Supabase", "label": "search", "complexity": "medium"}
+{"text": "Find documentation on Cloudflare D1 prepared statements", "label": "search", "complexity": "low"}
+{"text": "Search for how to implement soft deletes in a multi-tenant database", "label": "search", "complexity": "high"}
+{"text": "Look up the best practices for structuring a monorepo with Nx", "label": "search", "complexity": "medium"}
+{"text": "Find tutorials on building a RAG pipeline with LangChain", "label": "search", "complexity": "medium"}
+{"text": "Search for how to implement idempotent API endpoints", "label": "search", "complexity": "medium"}
+{"text": "Look up comparisons between Turso and PlanetScale for edge databases", "label": "search", "complexity": "medium"}
+{"text": "Find examples of Kubernetes horizontal pod autoscaling configuration", "label": "search", "complexity": "medium"}
+{"text": "Search for how to handle timezone issues in a globally distributed system", "label": "search", "complexity": "high"}
+{"text": "Look up the Cloudflare Workers KV eventual consistency behavior", "label": "search", "complexity": "high"}
+{"text": "Find benchmarks for SQLite vs DuckDB for analytical queries", "label": "search", "complexity": "medium"}
+{"text": "Search for best practices on structuring Hono middleware chains", "label": "search", "complexity": "low"}
+{"text": "Look up how to implement circuit breakers with Polly in .NET", "label": "search", "complexity": "medium"}
+{"text": "Find documentation on fastembed supported models and dimensions", "label": "search", "complexity": "low"}
+{"text": "Search for examples of implementing request coalescing in caching layers", "label": "search", "complexity": "high"}
+{"text": "Look up how to set up Prometheus alerting for Kubernetes pod evictions", "label": "search", "complexity": "medium"}
+{"text": "Find the migration guide from Express.js to Hono", "label": "search", "complexity": "low"}
+{"text": "Search for how to implement field-level encryption in PostgreSQL", "label": "search", "complexity": "high"}
+{"text": "Look up best practices for Cloudflare Workers D1 write consistency", "label": "search", "complexity": "high"}
+{"text": "Find examples of implementing the Strangler Fig pattern with an API gateway", "label": "search", "complexity": "high"}
+{"text": "Search for how to configure autoscaling based on custom metrics in EKS", "label": "search", "complexity": "high"}
+{"text": "Look up how to implement blue-green deployments with ArgoCD", "label": "search", "complexity": "high"}
+{"text": "Find benchmarks for Rust vs Go web frameworks in 2025", "label": "search", "complexity": "low"}
+{"text": "Search for examples of implementing request deduplication in a message queue", "label": "search", "complexity": "high"}
+{"text": "Look up how to use Drizzle ORM with Cloudflare D1 and Hono", "label": "search", "complexity": "low"}
+{"text": "Find comparisons between ONNX Runtime and fastembed for text embeddings", "label": "search", "complexity": "medium"}
+{"text": "Sort these API endpoints by response time as a table", "label": "classification", "complexity": "medium"}
+{"text": "Rank these database queries by execution cost", "label": "classification", "complexity": "medium"}
+{"text": "Group these log entries by error type", "label": "classification", "complexity": "low"}
+{"text": "Bin these response times into latency buckets", "label": "classification", "complexity": "medium"}
+{"text": "Label these HTTP methods as safe or unsafe", "label": "classification", "complexity": "low"}
+{"text": "Determine if this database query is read-only or write", "label": "classification", "complexity": "low"}
+{"text": "Sort these commits by their impact on bundle size", "label": "classification", "complexity": "medium"}
+{"text": "Categorize these metrics as leading or lagging indicators", "label": "classification", "complexity": "medium"}
+{"text": "Evaluate these configuration values as valid or invalid", "label": "classification", "complexity": "low"}
+{"text": "Rank these security vulnerabilities by CVSS score", "label": "classification", "complexity": "medium"}
+{"text": "Write a Go function that parses command line flags", "label": "code", "complexity": "medium"}
+{"text": "Write a Python script that converts markdown to HTML", "label": "code", "complexity": "medium"}
+{"text": "Create a Rust CLI subcommand for file compression", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript function that generates a UUID", "label": "code", "complexity": "low"}
+{"text": "Create a Python dataclass that auto-generates SQL INSERT", "label": "code", "complexity": "medium"}
+{"text": "Write a Go function that implements a rate limiter", "label": "code", "complexity": "high"}
+{"text": "Write a Python script that converts CSV to SQLite database", "label": "code", "complexity": "medium"}
+{"text": "Create a TypeScript function that generates random test data from schema", "label": "code", "complexity": "high"}
+{"text": "Write a Hono middleware that validates request bodies", "label": "code", "complexity": "medium"}
+{"text": "Create a Go HTTP handler that streams large files", "label": "code", "complexity": "high"}
+{"text": "Write a Python script that monitors directory for file changes", "label": "code", "complexity": "medium"}
+{"text": "Write a Rust function that computes SHA256 hash of a file", "label": "code", "complexity": "medium"}
+{"text": "Create a Python class that implements a message queue", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript function that deeply merges two objects", "label": "code", "complexity": "medium"}
+{"text": "Write a Go function that implements consistent hashing", "label": "code", "complexity": "high"}
+{"text": "Tell me a story about a Kubernetes pod that kept restarting", "label": "creative", "complexity": "medium"}
+{"text": "Write a detective story about tracking down a race condition", "label": "creative", "complexity": "medium"}
+{"text": "Compose a poem about the life cycle of a production deployment", "label": "creative", "complexity": "low"}
+{"text": "Write a narrative about a database migration gone wrong", "label": "creative", "complexity": "medium"}
+{"text": "Create a fable about a load balancer that learned fairness", "label": "creative", "complexity": "medium"}
+{"text": "Write a fairy tale about a developer and their rubber duck debugger", "label": "creative", "complexity": "low"}
+{"text": "Compose a limerick about a Kubernetes cluster autoscaler", "label": "creative", "complexity": "low"}
+{"text": "Write a satirical short story about a code review from hell", "label": "creative", "complexity": "medium"}
+{"text": "Extract the error codes from this crash dump screenshot", "label": "extraction", "complexity": "low"}
+{"text": "Read the data from this Prometheus metrics screenshot", "label": "vision", "complexity": "medium"}
+{"text": "What does this system architecture diagram show", "label": "vision", "complexity": "medium"}
+{"text": "Describe the network topology shown in this diagram", "label": "vision", "complexity": "high"}
+{"text": "Identify the components in this infrastructure screenshot", "label": "vision", "complexity": "medium"}
+{"text": "Read the log output from this terminal screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does the performance graph show at the 3am spike", "label": "vision", "complexity": "medium"}
+{"text": "Describe the flow shown in this sequence diagram image", "label": "vision", "complexity": "high"}
+{"text": "Read the configuration values from this settings page screenshot", "label": "vision", "complexity": "low"}
+{"text": "Identify the failing component in this monitoring dashboard", "label": "vision", "complexity": "medium"}
+{"text": "What does the error boundary show in this React DevTools", "label": "vision", "complexity": "medium"}
+{"text": "Extract the column definitions from this database schema screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the deployment status from this Kubernetes dashboard screenshot", "label": "vision", "complexity": "low"}
+{"text": "Describe what the CI pipeline failure screenshot shows", "label": "vision", "complexity": "low"}
+{"text": "What does this latency heatmap reveal about the system", "label": "vision", "complexity": "high"}
+{"text": "Interpret the resource utilization chart in this screenshot", "label": "vision", "complexity": "medium"}
+{"text": "Render this table as a formatted ASCII table", "label": "vision", "complexity": "low"}
+{"text": "Create a pen-and-ink sketch of a server room", "label": "vision", "complexity": "high"}
+{"text": "Draw a diagram showing the request flow through the system", "label": "vision", "complexity": "high"}
+{"text": "Create an ASCII art representation of the network topology", "label": "vision", "complexity": "medium"}
+{"text": "Generate an SVG diagram of the microservices architecture", "label": "vision", "complexity": "high"}
+{"text": "What are all the HTTP status codes for server errors", "label": "general", "complexity": "low"}
+{"text": "Explain what a load balancer does in simple terms", "label": "general", "complexity": "low"}
+{"text": "How does a TLS handshake establish a secure connection", "label": "general", "complexity": "high"}
+{"text": "What is the difference between a mutex and a semaphore", "label": "general", "complexity": "medium"}
+{"text": "Explain how a database index speeds up queries", "label": "general", "complexity": "medium"}
+{"text": "What is the CAP theorem and what does it mean practically", "label": "general", "complexity": "high"}
+{"text": "How does connection pooling work in a database driver", "label": "general", "complexity": "medium"}
+{"text": "What is the difference between a process and a coroutine", "label": "general", "complexity": "medium"}
+{"text": "Explain how a reverse proxy distributes traffic", "label": "general", "complexity": "medium"}
+{"text": "What is the purpose of a service mesh sidecar", "label": "general", "complexity": "medium"}
+{"text": "How does the Raft consensus protocol work", "label": "general", "complexity": "high"}
+{"text": "What is write-ahead logging in databases", "label": "general", "complexity": "high"}
+{"text": "Port this Express middleware to Fastify", "label": "translation", "complexity": "medium"}
+{"text": "Rewrite this jQuery AJAX to use fetch API", "label": "translation", "complexity": "low"}
+{"text": "Convert this class component to a function component", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Python unittest to pytest", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this CommonJS module to ES module syntax", "label": "translation", "complexity": "low"}
+{"text": "Convert this SQL JOIN to a MongoDB aggregation", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this Promise chain to use async/await", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Bash one-liner to a Python script", "label": "translation", "complexity": "medium"}
+{"text": "Convert this JSON schema to a TypeScript interface", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this imperative code to use functional patterns", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Makefile to a Justfile", "label": "translation", "complexity": "low"}
+{"text": "Convert this CloudFormation template to Pulumi code", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this nested callback to use promises", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Python dataclass to a Pydantic model", "label": "translation", "complexity": "low"}
+{"text": "Convert this REST API call to a gRPC service call", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this synchronous code to use async/await", "label": "translation", "complexity": "medium"}
+{"text": "Translate this CSS media query to use container queries", "label": "translation", "complexity": "medium"}
+{"text": "Convert this Dockerfile to use distroless base images", "label": "translation", "complexity": "medium"}
+{"text": "Rewrite this try-catch to use Result type", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Terraform module to use CDK", "label": "translation", "complexity": "high"}
+{"text": "Convert this YAML config to TOML format", "label": "translation", "complexity": "low"}
+{"text": "Summarize the differences between Redis and Memcached", "label": "summarization", "complexity": "medium"}
+{"text": "Give me a brief overview of the incident postmortem", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the API documentation to the key endpoints", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the load test results and key findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me the highlights from the quarterly engineering report", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the comparison between these monitoring tools", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the sprint retrospective into action items", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the security audit findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me a one-paragraph summary of the system design", "label": "summarization", "complexity": "low"}
+{"text": "Summarize the cost breakdown from the cloud bill", "label": "summarization", "complexity": "medium"}
+{"text": "Check the Redis server ping response time", "label": "tool_call", "complexity": "low"}
+{"text": "Run the Python test suite and report results", "label": "tool_call", "complexity": "low"}
+{"text": "Get the list of running Kubernetes pods", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Docker container resource usage stats", "label": "tool_call", "complexity": "low"}
+{"text": "Run the linter on the TypeScript source files", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the application error logs from the last hour", "label": "tool_call", "complexity": "low"}
+{"text": "Check the PostgreSQL connection count and idle connections", "label": "tool_call", "complexity": "low"}
+{"text": "Run the database backup script", "label": "tool_call", "complexity": "low"}
+{"text": "Get the current CPU and memory usage of the API server", "label": "tool_call", "complexity": "low"}
+{"text": "Check the SSL certificate expiration for the production domain", "label": "tool_call", "complexity": "low"}
+{"text": "Run a traceroute to the database host", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Kubernetes pod restart count", "label": "tool_call", "complexity": "low"}
+{"text": "Get the git log for the last 20 commits", "label": "tool_call", "complexity": "low"}
+{"text": "Run the security scan on the npm dependencies", "label": "tool_call", "complexity": "medium"}
+{"text": "Check the network bandwidth usage on the primary node", "label": "tool_call", "complexity": "low"}
+{"text": "Search for how to implement rate limiting with a sliding window", "label": "search", "complexity": "medium"}
+{"text": "Look up Cloudflare Workers D1 prepared statements API", "label": "search", "complexity": "low"}
+{"text": "Find benchmarks for Rust vs Go HTTP server performance", "label": "search", "complexity": "low"}
+{"text": "Search for examples of the Outbox pattern implementation", "label": "search", "complexity": "high"}
+{"text": "Look up how to configure PgBouncer for connection pooling", "label": "search", "complexity": "medium"}
+{"text": "Find tutorials on building a RAG pipeline with LangChain", "label": "search", "complexity": "medium"}
+{"text": "Search for how to implement idempotent API endpoints", "label": "search", "complexity": "medium"}
+{"text": "Look up best practices for structuring a Turborepo monorepo", "label": "search", "complexity": "medium"}
+{"text": "Find comparisons between Turso and PlanetScale databases", "label": "search", "complexity": "medium"}
+{"text": "Search for Kubernetes HPA custom metrics configuration", "label": "search", "complexity": "high"}
+{"text": "Look up how to implement circuit breakers in microservices", "label": "search", "complexity": "medium"}
+{"text": "Find the fastembed supported models list and dimensions", "label": "search", "complexity": "low"}
+{"text": "Search for how to handle timezone issues globally", "label": "search", "complexity": "high"}
+{"text": "Look up Cloudflare Workers KV consistency guarantees", "label": "search", "complexity": "high"}
+{"text": "Find benchmarks for SQLite vs DuckDB analytical performance", "label": "search", "complexity": "medium"}
+{"text": "Search for Hono middleware chain best practices", "label": "search", "complexity": "low"}
+{"text": "Look up how to implement field-level encryption in PostgreSQL", "label": "search", "complexity": "high"}
+{"text": "Find examples of request coalescing in caching layers", "label": "search", "complexity": "high"}
+{"text": "Search for Prometheus alerting rules for pod evictions", "label": "search", "complexity": "medium"}
+{"text": "Look up blue-green deployment patterns with ArgoCD", "label": "search", "complexity": "high"}
+{"text": "Turn this error timeline into a structured JSON postmortem", "label": "structured_output", "complexity": "high"}
+{"text": "Create a JSON schema for validating webhook payloads", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a JSON config for the multi-tier rate limiter", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this meeting transcript into structured action items JSON", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the service dependency graph", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON payload for batch user import", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this deployment notes into a JSON runbook", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON config for the feature flag rollout strategy", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON representation of the approval workflow", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this natural language requirement into JSON acceptance criteria", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON template for the incident response form", "label": "structured_output", "complexity": "low"}
+{"text": "Generate a structured JSON diff between two config versions", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this plain text log into structured JSON log entries", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the access control matrix", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON config for the notification routing", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this customer feedback into structured JSON sentiment data", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON schema for the API request body validation", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON payload for the analytics event", "label": "structured_output", "complexity": "low"}
+{"text": "Turn this hand-drawn diagram description into JSON component specs", "label": "structured_output", "complexity": "high"}
+{"text": "Create a JSON config for the cache invalidation rules", "label": "structured_output", "complexity": "high"}
+{"text": "Remember the port for the internal metrics endpoint", "label": "memory", "complexity": "low"}
+{"text": "Remember the Cloudflare zone ID for the production domain", "label": "memory", "complexity": "low"}
+{"text": "Remember the Kubernetes namespace for the observability stack", "label": "memory", "complexity": "low"}
+{"text": "Remember the Redis port number for staging", "label": "memory", "complexity": "low"}
+{"text": "Remember the connection pool size we agreed on", "label": "memory", "complexity": "low"}
+{"text": "Remember the Docker registry URL for our images", "label": "memory", "complexity": "low"}
+{"text": "Remember the CI runner token for the GitHub Actions", "label": "memory", "complexity": "low"}
+{"text": "Remember the database schema name for the analytics DB", "label": "memory", "complexity": "low"}
+{"text": "Remember the webhook secret for the payment integration", "label": "memory", "complexity": "low"}
+{"text": "Remember the cache TTL we set for user sessions", "label": "memory", "complexity": "low"}
+{"text": "Remember the port for the internal metrics endpoint", "label": "memory", "complexity": "low"}
+{"text": "Remember the staging server hostname", "label": "memory", "complexity": "low"}
+{"text": "Remember the API key prefix for the external service", "label": "memory", "complexity": "low"}
+{"text": "Remember the Slack channel for deployment notifications", "label": "memory", "complexity": "low"}
+{"text": "Remember the backup schedule for the production database", "label": "memory", "complexity": "low"}
+{"text": "Port this Express middleware to Fastify", "label": "translation", "complexity": "medium"}
+{"text": "Convert this nested JSON to a flat CSV format", "label": "translation", "complexity": "medium"}
+{"text": "Port this Angular component to a Vue component", "label": "translation", "complexity": "high"}
+{"text": "Convert this REST endpoint to a GraphQL resolver", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this callback-based code to use async/await", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Cypress test to a Playwright test", "label": "translation", "complexity": "medium"}
+{"text": "Convert this WebSocket implementation to use SSE", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this jQuery code to use vanilla JavaScript", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Python Flask route to a FastAPI endpoint", "label": "translation", "complexity": "medium"}
+{"text": "Convert this CommonJS require to ES module import", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this Redux store to use Zustand", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Dockerfile to use multi-stage builds", "label": "translation", "complexity": "medium"}
+{"text": "Convert this CloudFormation template to Terraform HCL", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this imperative code to use functional patterns", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Python threading to asyncio", "label": "translation", "complexity": "high"}
+{"text": "Convert this raw SQL to a GORM query", "label": "translation", "complexity": "medium"}
+{"text": "Rewrite this class component to a function component", "label": "translation", "complexity": "medium"}
+{"text": "Port this bash script to a Python equivalent", "label": "translation", "complexity": "medium"}
+{"text": "Convert this Makefile to a Justfile", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this nested callback to use promises", "label": "translation", "complexity": "medium"}
+{"text": "Translate this OpenAPI spec to a GraphQL schema", "label": "translation", "complexity": "high"}
+{"text": "Convert this TOML config to YAML format", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this synchronous code to use coroutines", "label": "translation", "complexity": "medium"}
+{"text": "Pull out all the JSON keys from this nested config", "label": "extraction", "complexity": "low"}
+{"text": "Extract the TTL values from this Redis config", "label": "extraction", "complexity": "low"}
+{"text": "Pull all the environment variable names from this Dockerfile", "label": "extraction", "complexity": "low"}
+{"text": "Extract the column names from this database schema", "label": "extraction", "complexity": "low"}
+{"text": "Pull all the API endpoint paths from this route file", "label": "extraction", "complexity": "low"}
+{"text": "Extract the IP addresses from this server log", "label": "extraction", "complexity": "low"}
+{"text": "Pull the package names from this requirements.txt", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the function names from this Python module", "label": "extraction", "complexity": "low"}
+{"text": "Pull the user IDs from this access log", "label": "extraction", "complexity": "low"}
+{"text": "Extract the file paths and sizes from this disk report", "label": "extraction", "complexity": "low"}
+{"text": "Pull all the class names from this codebase", "label": "extraction", "complexity": "low"}
+{"text": "Extract the error codes from this crash dump", "label": "extraction", "complexity": "low"}
+{"text": "Pull the configuration keys from this YAML file", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the port numbers from this docker-compose", "label": "extraction", "complexity": "low"}
+{"text": "Pull the timestamps from this audit log", "label": "extraction", "complexity": "low"}
+{"text": "Extract the table names from this SQL dump", "label": "extraction", "complexity": "low"}
+{"text": "Pull all the CSS selectors from this stylesheet", "label": "extraction", "complexity": "low"}
+{"text": "Extract the version strings from this lock file", "label": "extraction", "complexity": "low"}
+{"text": "Pull the resource names from this Kubernetes manifest", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the regex patterns from the validator code", "label": "extraction", "complexity": "medium"}
+{"text": "Classify these test failures as flaky, environment, or real bugs", "label": "classification", "complexity": "medium"}
+{"text": "Label these infrastructure changes as scaling, maintenance, or migration", "label": "classification", "complexity": "medium"}
+{"text": "Classify these microservice interactions as synchronous or asynchronous", "label": "classification", "complexity": "medium"}
+{"text": "Sort these pull requests by their risk level", "label": "classification", "complexity": "medium"}
+{"text": "Categorize these error messages as client-side or server-side", "label": "classification", "complexity": "low"}
+{"text": "Tag these commits as breaking change, feature, or fix", "label": "classification", "complexity": "low"}
+{"text": "Label these database queries as OLTP or OLAP", "label": "classification", "complexity": "medium"}
+{"text": "Classify these config changes as safe or risky", "label": "classification", "complexity": "medium"}
+{"text": "Sort these incidents by severity level", "label": "classification", "complexity": "low"}
+{"text": "Categorize these endpoints as public or internal", "label": "classification", "complexity": "low"}
+{"text": "Generate a structured representation of the database migration plan", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured monitoring config from alert descriptions", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this natural language requirement into JSON acceptance criteria", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON schema for the API request validation", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON payload for the batch import endpoint", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this meeting notes into structured JSON action items", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON config for the feature flag rollout", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON diff of two config versions", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this incident report into structured JSON", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the service dependency graph", "label": "structured_output", "complexity": "high"}
+{"text": "Summarize the differences between these four caching strategies", "label": "summarization", "complexity": "high"}
+{"text": "Give me a quick summary of each microservice responsibility", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the comparison between these monitoring tools", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the sprint retrospective into action items", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the security audit findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me a one-paragraph summary of the system design", "label": "summarization", "complexity": "low"}
+{"text": "Summarize the cost breakdown from the cloud bill", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the API documentation to the essentials", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the load test results and findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me the highlights from the quarterly report", "label": "summarization", "complexity": "medium"}
+{"text": "Run the Python linter on the src directory", "label": "tool_call", "complexity": "low"}
+{"text": "Check how many GitHub issues are open with label P0", "label": "tool_call", "complexity": "low"}
+{"text": "Run the unit test suite and report results", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Redis server ping response time", "label": "tool_call", "complexity": "low"}
+{"text": "Get the list of running Docker containers", "label": "tool_call", "complexity": "low"}
+{"text": "Check the PostgreSQL connection count", "label": "tool_call", "complexity": "low"}
+{"text": "Run the security scan on npm dependencies", "label": "tool_call", "complexity": "medium"}
+{"text": "Check the Kubernetes pod restart count", "label": "tool_call", "complexity": "low"}
+{"text": "Get the git log for the last 10 commits", "label": "tool_call", "complexity": "low"}
+{"text": "Check the SSL certificate expiration date", "label": "tool_call", "complexity": "low"}
+{"text": "Run a traceroute to the database host", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Docker container resource usage", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the application error logs from last hour", "label": "tool_call", "complexity": "low"}
+{"text": "Run the type checker on the TypeScript project", "label": "tool_call", "complexity": "low"}
+{"text": "Check the disk usage on the production server", "label": "tool_call", "complexity": "low"}
+{"text": "Tell me a story about a race condition that caused a data center outage", "label": "creative", "complexity": "medium"}
+{"text": "Write a detective story about tracking down a memory leak", "label": "creative", "complexity": "medium"}
+{"text": "Compose a poem about a successful zero-downtime deployment", "label": "creative", "complexity": "low"}
+{"text": "Write a narrative about a database migration gone wrong", "label": "creative", "complexity": "medium"}
+{"text": "Create a fable about a load balancer that learned fairness", "label": "creative", "complexity": "medium"}
+{"text": "Write a fairy tale about a developer and their rubber duck", "label": "creative", "complexity": "low"}
+{"text": "Compose a limerick about Kubernetes autoscaling", "label": "creative", "complexity": "low"}
+{"text": "Write a satirical story about code review from hell", "label": "creative", "complexity": "medium"}
+{"text": "Create a mock interview with a production database", "label": "creative", "complexity": "medium"}
+{"text": "Write a dramatic monologue from a dead-letter queue", "label": "creative", "complexity": "medium"}
+{"text": "What is the difference between a mutex and a semaphore", "label": "general", "complexity": "medium"}
+{"text": "List the HTTP status codes for client errors", "label": "general", "complexity": "low"}
+{"text": "How does a TLS handshake work", "label": "general", "complexity": "high"}
+{"text": "What is the purpose of a reverse proxy", "label": "general", "complexity": "low"}
+{"text": "Explain how a database index speeds up queries", "label": "general", "complexity": "medium"}
+{"text": "What is the CAP theorem and what does it mean", "label": "general", "complexity": "high"}
+{"text": "How does connection pooling work", "label": "general", "complexity": "medium"}
+{"text": "What is the difference between a process and a coroutine", "label": "general", "complexity": "medium"}
+{"text": "Explain how a reverse proxy distributes traffic", "label": "general", "complexity": "medium"}
+{"text": "What is the purpose of a service mesh sidecar", "label": "general", "complexity": "medium"}
+{"text": "Create a pen-and-ink sketch of a server room", "label": "vision", "complexity": "high"}
+{"text": "Extract the resource names from this Kubernetes dashboard screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the log output from this terminal screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does this architecture diagram show", "label": "vision", "complexity": "medium"}
+{"text": "Describe the network topology in this diagram", "label": "vision", "complexity": "high"}
+{"text": "Read the data from this monitoring dashboard screenshot", "label": "vision", "complexity": "medium"}
+{"text": "What does this CI pipeline failure screenshot show", "label": "vision", "complexity": "low"}
+{"text": "Identify the failing component in this system diagram", "label": "vision", "complexity": "medium"}
+{"text": "Render this table as an ASCII table", "label": "vision", "complexity": "low"}
+{"text": "Create an ASCII art representation of the network topology", "label": "vision", "complexity": "medium"}
+{"text": "Classify these database queries as read or write operations", "label": "classification", "complexity": "low"}
+{"text": "Label these API responses as success or error", "label": "classification", "complexity": "low"}
+{"text": "Sort these incidents by their severity level", "label": "classification", "complexity": "low"}
+{"text": "Categorize these log entries as debug, info, warn, or error", "label": "classification", "complexity": "low"}
+{"text": "Tag these commits as feature, fix, or refactor", "label": "classification", "complexity": "low"}
+{"text": "Classify these configuration values as valid or invalid", "label": "classification", "complexity": "low"}
+{"text": "Label these network packets as inbound or outbound", "label": "classification", "complexity": "low"}
+{"text": "Sort these files by their modification date", "label": "classification", "complexity": "low"}
+{"text": "Categorize these endpoints as public or internal", "label": "classification", "complexity": "low"}
+{"text": "Tag these test results as pass, fail, or skip", "label": "classification", "complexity": "low"}
+{"text": "Classify these test failures as flaky, environment, or real bugs", "label": "classification", "complexity": "medium"}
+{"text": "Label these infrastructure changes as scaling, maintenance, or migration", "label": "classification", "complexity": "medium"}
+{"text": "Classify these microservice interactions as synchronous or asynchronous", "label": "classification", "complexity": "medium"}
+{"text": "Write a Python function that flattens a nested dictionary", "label": "code", "complexity": "medium"}
+{"text": "Create a Python script that converts a directory tree to JSON", "label": "code", "complexity": "medium"}
+{"text": "Write a TypeScript function that generates random test data from a schema", "label": "code", "complexity": "high"}
+{"text": "Implement a binary search tree in Python", "label": "code", "complexity": "high"}
+{"text": "Write a Go function that implements a worker pool", "label": "code", "complexity": "high"}
+{"text": "Create a Python class for managing a connection pool", "label": "code", "complexity": "high"}
+{"text": "Write a Rust function that computes edit distance", "label": "code", "complexity": "high"}
+{"text": "Implement a LRU cache in Go", "label": "code", "complexity": "high"}
+{"text": "Write a Python async generator for streaming data", "label": "code", "complexity": "medium"}
+{"text": "Create a TypeScript type that extracts string literal unions", "label": "code", "complexity": "high"}
+{"text": "Write a Python script that monitors directory for file changes", "label": "code", "complexity": "medium"}
+{"text": "Create a concurrent hash map in Go using RWMutex", "label": "code", "complexity": "high"}
+{"text": "Write a Python function that computes SHA256 hash of a file", "label": "code", "complexity": "medium"}
+{"text": "Implement a sliding window rate limiter in Rust", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript utility type that makes all nested props optional", "label": "code", "complexity": "high"}
+{"text": "Create a Python context manager for file locking", "label": "code", "complexity": "medium"}
+{"text": "Write a Go HTTP handler that streams large files efficiently", "label": "code", "complexity": "high"}
+{"text": "Implement a Bloom filter in Python", "label": "code", "complexity": "high"}
+{"text": "Write a Python script that parses command line arguments", "label": "code", "complexity": "low"}
+{"text": "Create a Go function that parallelizes HTTP requests with concurrency limit", "label": "code", "complexity": "high"}
+{"text": "Write a TypeScript function that deeply clones an object", "label": "code", "complexity": "medium"}
+{"text": "How does a bloom filter reduce disk reads", "label": "general", "complexity": "high"}
+{"text": "How does the Linux OOM killer decide which process to kill", "label": "general", "complexity": "high"}
+{"text": "How does the Raft consensus protocol elect a leader", "label": "general", "complexity": "high"}
+{"text": "How does a consistent hash ring distribute load", "label": "general", "complexity": "high"}
+{"text": "How does DNS over HTTPS differ from traditional DNS", "label": "general", "complexity": "medium"}
+{"text": "How does a message broker handle poison pills", "label": "general", "complexity": "high"}
+{"text": "How does the Spanner database achieve external consistency", "label": "general", "complexity": "high"}
+{"text": "How does gRPC handle bidirectional streaming", "label": "general", "complexity": "high"}
+{"text": "How does automatic garbage collection work in the JVM", "label": "general", "complexity": "high"}
+{"text": "How does a vector database perform similarity search", "label": "general", "complexity": "high"}
+{"text": "How does a load balancer decide where to send a request", "label": "general", "complexity": "medium"}
+{"text": "How does connection pooling improve database performance", "label": "general", "complexity": "medium"}
+{"text": "List all HTTP status codes for client errors", "label": "general", "complexity": "low"}
+{"text": "What are the ACID properties of a database transaction", "label": "general", "complexity": "medium"}
+{"text": "What is the difference between deep copy and shallow copy", "label": "general", "complexity": "low"}
+{"text": "Explain how a hash map resolves collisions", "label": "general", "complexity": "medium"}
+{"text": "What is the purpose of a reverse proxy server", "label": "general", "complexity": "low"}
+{"text": "Convert this MySQL CREATE TABLE to PostgreSQL types", "label": "translation", "complexity": "medium"}
+{"text": "Convert this nested JSON to a flat CSV format", "label": "translation", "complexity": "medium"}
+{"text": "Port this WebSocket implementation to use Server-Sent Events", "label": "translation", "complexity": "high"}
+{"text": "Translate this Python unittest to pytest style", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this CommonJS require to ES module import", "label": "translation", "complexity": "low"}
+{"text": "Convert this Dockerfile to use multi-stage builds", "label": "translation", "complexity": "medium"}
+{"text": "Rewrite this callback-based code to use async/await", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Bash one-liner to a Python script", "label": "translation", "complexity": "medium"}
+{"text": "Convert this JSON schema to a TypeScript interface", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this imperative code to use functional patterns", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Python dataclass to a Pydantic model", "label": "translation", "complexity": "low"}
+{"text": "Convert this REST API call to a gRPC service call", "label": "translation", "complexity": "high"}
+{"text": "Rewrite this Promise chain to use async/await", "label": "translation", "complexity": "medium"}
+{"text": "Translate this CloudFormation template to Terraform", "label": "translation", "complexity": "high"}
+{"text": "Convert this YAML config to TOML format", "label": "translation", "complexity": "low"}
+{"text": "Rewrite this nested callback to use promises", "label": "translation", "complexity": "medium"}
+{"text": "Translate this Makefile to a Justfile", "label": "translation", "complexity": "low"}
+{"text": "Convert this CSS media query to use container queries", "label": "translation", "complexity": "medium"}
+{"text": "Rewrite this try-catch to use Result type", "label": "translation", "complexity": "medium"}
+{"text": "Tell me a story about a race condition that caused a data center outage", "label": "creative", "complexity": "medium"}
+{"text": "Write a dramatic reading of a core dump stack trace", "label": "creative", "complexity": "medium"}
+{"text": "Compose a poem about a successful zero-downtime deployment", "label": "creative", "complexity": "low"}
+{"text": "Write a narrative about a database migration gone wrong", "label": "creative", "complexity": "medium"}
+{"text": "Create a fable about a load balancer that learned fairness", "label": "creative", "complexity": "medium"}
+{"text": "Write a fairy tale about a developer and their rubber duck", "label": "creative", "complexity": "low"}
+{"text": "Compose a limerick about Kubernetes autoscaling", "label": "creative", "complexity": "low"}
+{"text": "Write a satirical story about code review from hell", "label": "creative", "complexity": "medium"}
+{"text": "Create a mock interview with a production database", "label": "creative", "complexity": "medium"}
+{"text": "Write a dramatic monologue from a dead-letter queue", "label": "creative", "complexity": "medium"}
+{"text": "What is the TTL setting for each Redis key in this config", "label": "extraction", "complexity": "low"}
+{"text": "What database tables does this ORM model reference", "label": "extraction", "complexity": "low"}
+{"text": "Pull all the JSON keys from this nested config", "label": "extraction", "complexity": "low"}
+{"text": "Extract the column names from this database schema", "label": "extraction", "complexity": "low"}
+{"text": "Pull the API endpoint paths from this route file", "label": "extraction", "complexity": "low"}
+{"text": "Extract the IP addresses from this server log", "label": "extraction", "complexity": "low"}
+{"text": "Pull the package names from this requirements file", "label": "extraction", "complexity": "low"}
+{"text": "Extract all the function names from this module", "label": "extraction", "complexity": "low"}
+{"text": "Pull the user IDs from this access log", "label": "extraction", "complexity": "low"}
+{"text": "Extract the file paths and sizes from this disk report", "label": "extraction", "complexity": "low"}
+{"text": "Analyze the tradeoffs of using Redis as a primary database", "label": "reasoning", "complexity": "high"}
+{"text": "Why does the kubernetes pod keep getting evicted", "label": "reasoning", "complexity": "high"}
+{"text": "What could cause the message queue to lag behind", "label": "reasoning", "complexity": "high"}
+{"text": "Why is the TLS handshake adding latency on the first request", "label": "reasoning", "complexity": "high"}
+{"text": "Could the DNS cache be serving stale records", "label": "reasoning", "complexity": "medium"}
+{"text": "What would happen if we lost the primary database node", "label": "reasoning", "complexity": "high"}
+{"text": "Why does the filesystem run out of space despite the app not growing", "label": "reasoning", "complexity": "high"}
+{"text": "What causes thread contention in this Go pool", "label": "reasoning", "complexity": "high"}
+{"text": "Explain why the TCP connection is resetting mid-transfer", "label": "reasoning", "complexity": "high"}
+{"text": "Why would the load test show higher p99 latency than p95", "label": "reasoning", "complexity": "high"}
+{"text": "Summarize the differences between these four caching strategies", "label": "summarization", "complexity": "high"}
+{"text": "Give me a quick summary of each microservice responsibility", "label": "summarization", "complexity": "medium"}
+{"text": "Condense the sprint retrospective into action items", "label": "summarization", "complexity": "medium"}
+{"text": "Summarize the security audit findings", "label": "summarization", "complexity": "high"}
+{"text": "Give me the highlights from the quarterly report", "label": "summarization", "complexity": "medium"}
+{"text": "Run a quick benchmark on the Redis GET command", "label": "tool_call", "complexity": "low"}
+{"text": "Check how many GitHub issues are open with label P0", "label": "tool_call", "complexity": "low"}
+{"text": "Run the Python linter on the src directory", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Redis server ping response time", "label": "tool_call", "complexity": "low"}
+{"text": "Get the list of running Docker containers", "label": "tool_call", "complexity": "low"}
+{"text": "Check the PostgreSQL connection count", "label": "tool_call", "complexity": "low"}
+{"text": "Run the security scan on npm dependencies", "label": "tool_call", "complexity": "medium"}
+{"text": "Check the Kubernetes pod restart count", "label": "tool_call", "complexity": "low"}
+{"text": "Get the git log for the last 10 commits", "label": "tool_call", "complexity": "low"}
+{"text": "Check the SSL certificate expiration date", "label": "tool_call", "complexity": "low"}
+{"text": "Run a traceroute to the database host", "label": "tool_call", "complexity": "low"}
+{"text": "Check the Docker container resource usage", "label": "tool_call", "complexity": "low"}
+{"text": "Pull the application error logs from last hour", "label": "tool_call", "complexity": "low"}
+{"text": "Run the type checker on the TypeScript project", "label": "tool_call", "complexity": "low"}
+{"text": "Check the disk usage on the production server", "label": "tool_call", "complexity": "low"}
+{"text": "Create a pen-and-ink sketch of a server room", "label": "vision", "complexity": "high"}
+{"text": "Extract the resource names from this Kubernetes dashboard screenshot", "label": "vision", "complexity": "low"}
+{"text": "Read the log output from this terminal screenshot", "label": "vision", "complexity": "low"}
+{"text": "What does this architecture diagram show", "label": "vision", "complexity": "medium"}
+{"text": "Describe the network topology in this diagram", "label": "vision", "complexity": "high"}
+{"text": "Read the data from this monitoring dashboard screenshot", "label": "vision", "complexity": "medium"}
+{"text": "What does this CI pipeline failure screenshot show", "label": "vision", "complexity": "low"}
+{"text": "Identify the failing component in this system diagram", "label": "vision", "complexity": "medium"}
+{"text": "Render this table as an ASCII table", "label": "vision", "complexity": "low"}
+{"text": "Create an ASCII art representation of the network topology", "label": "vision", "complexity": "medium"}
+{"text": "Generate a structured YAML for this Kubernetes Ingress rule", "label": "structured_output", "complexity": "high"}
+{"text": "Turn this meeting notes into structured JSON action items", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON schema for the API request validation", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured JSON payload for the batch import", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this incident report into structured JSON", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON config for the feature flag rollout", "label": "structured_output", "complexity": "medium"}
+{"text": "Generate a structured JSON diff of two config versions", "label": "structured_output", "complexity": "medium"}
+{"text": "Turn this natural language requirement into JSON acceptance criteria", "label": "structured_output", "complexity": "medium"}
+{"text": "Create a JSON representation of the service dependency graph", "label": "structured_output", "complexity": "high"}
+{"text": "Generate a structured monitoring config from alert descriptions", "label": "structured_output", "complexity": "high"}
