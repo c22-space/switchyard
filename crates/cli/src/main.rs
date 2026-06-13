@@ -360,6 +360,10 @@ struct UpdateProvider {
     /// If Some and non-empty, update the key. If None or empty, keep existing.
     #[serde(default)]
     api_key: Option<String>,
+    #[serde(default)]
+    cost_per_1m_input_tokens: f64,
+    #[serde(default)]
+    cost_per_1m_output_tokens: f64,
 }
 
 async fn update_provider(
@@ -391,6 +395,8 @@ async fn update_provider(
         base_url: payload.base_url.clone(),
         api_key: None, // Key lives in .env
         model: payload.model.clone(),
+        cost_per_1m_input_tokens: payload.cost_per_1m_input_tokens,
+        cost_per_1m_output_tokens: payload.cost_per_1m_output_tokens,
     };
     Config::save(&state.config_path, &config)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
