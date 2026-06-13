@@ -7,8 +7,8 @@ use std::sync::Arc;
 use switchyard_core::config::Config;
 use switchyard_core::event::EventStore;
 use switchyard_core::router::Router;
-use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
+use switchyard_core::fastembed::{EmbeddingModel, InitOptions, TextEmbedding};
 
 #[derive(Parser)]
 #[command(name = "switchyard", about = "Capability router for agentic workflows")]
@@ -76,8 +76,13 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     let db_path = std::path::Path::new(&config.dashboard.db_path);
     let event_store = EventStore::new(db_path)?;
 
-    // Initialize k-NN router with vector store
-    let router = Router::new(&config, db_path)?;
+    // Initialize router with fine-tuned classifier
+    let router = Router::new(&config, std::path::Path::new("."))?;
+
+    // Initialize embedder
+    let embedder = TextEmbedding::try_new(
+        InitOptions::new(EmbeddingModel::AllMiniLML6V2)
+    )?;
 
     // Resolve .env path (same directory as config file)
     let env_path = config_path
@@ -93,7 +98,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     println!();
 
     let state = Arc::new(RouteState {
-        router: Mutex::new(router),
+        router,
+        embedder: std::sync::Mutex::new(embedder),
         config: config.clone(),
         config_path: config_path.clone(),
         env_path,
@@ -137,7 +143,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
 // ── Route state and handlers ───────────────────────────────────────────
 
 struct RouteState {
-    router: Mutex<Router>,
+    router: Router,
+    embedder: std::sync::Mutex<TextEmbedding>,
     config: Config,
     config_path: PathBuf,
     env_path: PathBuf,
@@ -203,10 +210,6 @@ async fn overview(
     axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
 ) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
     let stats = state.event_store.stats().map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
-    let example_count = {
-        let router = state.router.lock().await;
-        router.example_count().unwrap_or(0)
-    };
     let backends: Vec<serde_json::Value> = state.config.backends.iter().map(|b| {
         serde_json::json!({
             "name": b.name,
@@ -224,7 +227,6 @@ async fn overview(
         "embedding_model": state.config.router.embedding_model,
         "threshold": state.config.router.threshold,
         "fallback": state.config.router.fallback,
-        "example_count": example_count,
     })))
 }
 
@@ -445,20 +447,18 @@ async fn chat_completions(
         .unwrap_or("");
 
     let start = std::time::Instant::now();
-    let route = {
-        let mut router = state.router.lock().await;
-        let r = router.route(prompt).map_err(|e| {
-            tracing::error!("Routing failed: {}", e);
+    let embedding = {
+        let embedder = state.embedder.lock().unwrap();
+        let embeddings = embedder.embed(vec![prompt], None).map_err(|e| {
+            tracing::error!("Embedding failed: {}", e);
             axum::http::StatusCode::INTERNAL_SERVER_ERROR
         })?;
-        // Store the example for future k-NN (only if confidently classified)
-        if !r.is_fallback {
-            if let Err(e) = router.store_example(prompt, &r.category, r.score) {
-                tracing::warn!("Failed to store routing example: {}", e);
-            }
-        }
-        r
+        embeddings.into_iter().next().unwrap_or_default()
     };
+    let route = state.router.route(prompt, &embedding).map_err(|e| {
+        tracing::error!("Routing failed: {}", e);
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR
+    })?;
     let latency_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     let backend = state
