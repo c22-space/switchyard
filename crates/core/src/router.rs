@@ -1,14 +1,13 @@
 use anyhow::Result;
+use std::path::Path;
 use tracing::info;
 
-use crate::config::Config;
-use crate::vector_store::VectorStore;
+use crate::classifier::Classifier;
 
 pub struct Router {
-    vector_store: VectorStore,
+    classifier: Classifier,
     threshold: f32,
     fallback: String,
-    k: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -20,62 +19,43 @@ pub struct RouteResult {
 }
 
 impl Router {
-    pub fn new(config: &Config, db_path: &std::path::Path) -> Result<Self> {
+    pub fn new(config: &crate::config::Config, _db_path: &Path) -> Result<Self> {
+        let model_dir = Path::new("models/switchyard-router");
+        let weights_path = model_dir.join("weights.bin");
+        let labels_path = model_dir.join("labels.json");
+
+        info!("Loading fine-tuned classifier from {}", model_dir.display());
+
+        let classifier = Classifier::load(&weights_path, &labels_path)?;
+
         info!(
-            "Initializing k-NN router (model: {}, k: 5, threshold: {})",
-            config.router.embedding_model, config.router.threshold
+            "Router ready (threshold: {}, fallback: {})",
+            config.router.threshold, config.router.fallback
         );
 
-        let vector_store =
-            VectorStore::new(db_path, &config.router.embedding_model)?;
-
-        let count = vector_store.count()?;
-        info!("Router ready with {} examples in vector store", count);
-
         Ok(Self {
-            vector_store,
+            classifier,
             threshold: config.router.threshold,
             fallback: config.router.fallback.clone(),
-            k: 5,
         })
     }
 
-    pub fn route(&self, prompt: &str) -> Result<RouteResult> {
-        let embedding = self.vector_store.embed(prompt)?;
+    pub fn route(&self, _prompt: &str, embedding: &[f32]) -> Result<RouteResult> {
+        let (category, confidence, all_scores) = self.classifier.classify(embedding);
 
-        let neighbors = self.vector_store.search(&embedding, self.k)?;
+        let is_fallback = confidence < self.threshold;
 
-        let (category, score, is_fallback) = self
-            .vector_store
-            .classify(&neighbors, self.threshold, &self.fallback);
-
-        let all_scores = neighbors
-            .iter()
-            .map(|(cat, score)| (cat.clone(), *score))
-            .collect();
+        let final_category = if is_fallback {
+            self.fallback.clone()
+        } else {
+            category
+        };
 
         Ok(RouteResult {
-            category,
-            score,
+            category: final_category,
+            score: confidence,
             all_scores,
             is_fallback,
         })
-    }
-
-    /// Store a routing example for future k-NN classification.
-    pub fn store_example(
-        &mut self,
-        prompt: &str,
-        category: &str,
-        confidence: f32,
-    ) -> Result<()> {
-        let embedding = self.vector_store.embed(prompt)?;
-        self.vector_store
-            .store(prompt, &embedding, category, confidence)?;
-        Ok(())
-    }
-
-    pub fn example_count(&self) -> Result<usize> {
-        self.vector_store.count()
     }
 }

@@ -1,0 +1,32 @@
+{
+  "label2id": {
+    "classification": 0,
+    "code": 1,
+    "creative": 2,
+    "extraction": 3,
+    "general": 4,
+    "memory": 5,
+    "reasoning": 6,
+    "search": 7,
+    "structured_output": 8,
+    "summarization": 9,
+    "tool_call": 10,
+    "translation": 11,
+    "vision": 12
+  },
+  "id2label": {
+    "0": "classification",
+    "1": "code",
+    "2": "creative",
+    "3": "extraction",
+    "4": "general",
+    "5": "memory",
+    "6": "reasoning",
+    "7": "search",
+    "8": "structured_output",
+    "9": "summarization",
+    "10": "tool_call",
+    "11": "translation",
+    "12": "vision"
+  }
+}

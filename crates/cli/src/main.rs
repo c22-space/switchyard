@@ -7,8 +7,8 @@ use std::sync::Arc;
 use switchyard_core::config::Config;
 use switchyard_core::event::EventStore;
 use switchyard_core::router::Router;
-use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
+use switchyard_core::fastembed::{EmbeddingModel, InitOptions, TextEmbedding};
 
 #[derive(Parser)]
 #[command(name = "switchyard", about = "Capability router for agentic workflows")]
@@ -76,8 +76,13 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     let db_path = std::path::Path::new(&config.dashboard.db_path);
     let event_store = EventStore::new(db_path)?;
 
-    // Initialize k-NN router with vector store
-    let router = Router::new(&config, db_path)?;
+    // Initialize router with fine-tuned classifier
+    let router = Router::new(&config, std::path::Path::new("."))?;
+
+    // Initialize embedder
+    let embedder = TextEmbedding::try_new(
+        InitOptions::new(EmbeddingModel::AllMiniLML6V2)
+    )?;
 
     // Resolve .env path (same directory as config file)
     let env_path = config_path
@@ -93,7 +98,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
     println!();
 
     let state = Arc::new(RouteState {
-        router: Mutex::new(router),
+        router,
+        embedder: std::sync::Mutex::new(embedder),
         config: config.clone(),
         config_path: config_path.clone(),
         env_path,
@@ -137,7 +143,8 @@ async fn cmd_server(config_path: &PathBuf) -> Result<()> {
 // ── Route state and handlers ───────────────────────────────────────────
 
 struct RouteState {
-    router: Mutex<Router>,
+    router: Router,
+    embedder: std::sync::Mutex<TextEmbedding>,
     config: Config,
     config_path: PathBuf,
     env_path: PathBuf,
@@ -203,18 +210,23 @@ async fn overview(
     axum::extract::State(state): axum::extract::State<Arc<RouteState>>,
 ) -> Result<axum::Json<serde_json::Value>, axum::http::StatusCode> {
     let stats = state.event_store.stats().map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
-    let example_count = {
-        let router = state.router.lock().await;
-        router.example_count().unwrap_or(0)
-    };
+    let backends: Vec<serde_json::Value> = state.config.backends.iter().map(|b| {
+        serde_json::json!({
+            "name": b.name,
+            "provider": b.provider,
+            "model": b.model,
+            "cost_per_1m_input_tokens": b.cost_per_1m_input_tokens,
+            "cost_per_1m_output_tokens": b.cost_per_1m_output_tokens,
+        })
+    }).collect();
+
     Ok(axum::Json(serde_json::json!({
         "stats": stats,
-        "backends": state.config.backends.len(),
+        "backends": backends,
         "capabilities": state.config.router.capabilities.len(),
         "embedding_model": state.config.router.embedding_model,
         "threshold": state.config.router.threshold,
         "fallback": state.config.router.fallback,
-        "example_count": example_count,
     })))
 }
 
@@ -350,6 +362,10 @@ struct UpdateProvider {
     /// If Some and non-empty, update the key. If None or empty, keep existing.
     #[serde(default)]
     api_key: Option<String>,
+    #[serde(default)]
+    cost_per_1m_input_tokens: f64,
+    #[serde(default)]
+    cost_per_1m_output_tokens: f64,
 }
 
 async fn update_provider(
@@ -381,6 +397,8 @@ async fn update_provider(
         base_url: payload.base_url.clone(),
         api_key: None, // Key lives in .env
         model: payload.model.clone(),
+        cost_per_1m_input_tokens: payload.cost_per_1m_input_tokens,
+        cost_per_1m_output_tokens: payload.cost_per_1m_output_tokens,
     };
     Config::save(&state.config_path, &config)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -429,20 +447,18 @@ async fn chat_completions(
         .unwrap_or("");
 
     let start = std::time::Instant::now();
-    let route = {
-        let mut router = state.router.lock().await;
-        let r = router.route(prompt).map_err(|e| {
-            tracing::error!("Routing failed: {}", e);
+    let embedding = {
+        let embedder = state.embedder.lock().unwrap();
+        let embeddings = embedder.embed(vec![prompt], None).map_err(|e| {
+            tracing::error!("Embedding failed: {}", e);
             axum::http::StatusCode::INTERNAL_SERVER_ERROR
         })?;
-        // Store the example for future k-NN (only if confidently classified)
-        if !r.is_fallback {
-            if let Err(e) = router.store_example(prompt, &r.category, r.score) {
-                tracing::warn!("Failed to store routing example: {}", e);
-            }
-        }
-        r
+        embeddings.into_iter().next().unwrap_or_default()
     };
+    let route = state.router.route(prompt, &embedding).map_err(|e| {
+        tracing::error!("Routing failed: {}", e);
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR
+    })?;
     let latency_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     let backend = state
@@ -458,19 +474,6 @@ async fn chat_completions(
         route.score,
         backend.name,
         latency_ms
-    );
-
-    // Log event to SQLite
-    let _ = state.event_store.log_route(
-        prompt,
-        &route.category,
-        route.score,
-        route.is_fallback,
-        &backend.name,
-        &backend.model,
-        Some(latency_ms),
-        "ok",
-        None,
     );
 
     // Load API key from .env
@@ -499,6 +502,9 @@ async fn chat_completions(
             Some(latency_ms),
             "error",
             Some(&e.to_string()),
+            None,
+            None,
+            None,
         );
         axum::http::StatusCode::BAD_GATEWAY
     })?;
@@ -520,6 +526,9 @@ async fn chat_completions(
             Some(latency_ms),
             "error",
             Some(&body),
+            None,
+            None,
+            None,
         );
         return Err(
             axum::http::StatusCode::from_u16(status.as_u16())
@@ -530,11 +539,25 @@ async fn chat_completions(
     // Streaming response - forward raw bytes from upstream (already SSE-formatted)
     if request.stream {
         use futures_util::StreamExt;
-
         let stream = resp.bytes_stream();
         let body = axum::body::Body::from_stream(stream.map(|result| {
             result.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
         }));
+        // Log streaming route (no usage data available in SSE stream)
+        let _ = state.event_store.log_route(
+            prompt,
+            &route.category,
+            route.score,
+            route.is_fallback,
+            &backend.name,
+            &backend.model,
+            Some(latency_ms),
+            "ok",
+            None,
+            None,
+            None,
+            None,
+        );
 
         let response = axum::response::Response::builder()
             .header("content-type", "text/event-stream")
@@ -554,11 +577,49 @@ async fn chat_completions(
         let mut response: serde_json::Value =
             serde_json::from_str(&body).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
 
+        // Parse usage from response
+        let input_tokens = response
+            .get("usage")
+            .and_then(|u| u.get("prompt_tokens"))
+            .and_then(|v| v.as_i64());
+        let output_tokens = response
+            .get("usage")
+            .and_then(|u| u.get("completion_tokens"))
+            .and_then(|v| v.as_i64());
+
+        // Compute estimated cost
+        let estimated_cost = match (input_tokens, output_tokens) {
+            (Some(inp), Some(out)) => {
+                let cost = (inp as f64 * backend.cost_per_1m_input_tokens
+                    + out as f64 * backend.cost_per_1m_output_tokens)
+                    / 1_000_000.0;
+                Some(cost)
+            }
+            _ => None,
+        };
+
+        // Log with usage data
+        let _ = state.event_store.log_route(
+            prompt,
+            &route.category,
+            route.score,
+            route.is_fallback,
+            &backend.name,
+            &backend.model,
+            Some(latency_ms),
+            "ok",
+            None,
+            input_tokens,
+            output_tokens,
+            estimated_cost,
+        );
+
         response["switchyard_route"] = serde_json::json!({
             "category": route.category,
             "score": route.score,
             "is_fallback": route.is_fallback,
             "backend": backend.name,
+            "estimated_cost": estimated_cost,
         });
 
         Ok(axum::Json(response).into_response())
@@ -621,6 +682,25 @@ fn cmd_stats(config_path: &PathBuf) -> Result<()> {
         "Routing Accuracy:".dimmed(),
         format!("{:.1}%", stats.accuracy_pct).bold()
     );
+
+    if stats.total_input_tokens > 0 || stats.total_output_tokens > 0 {
+        println!();
+        println!(
+            "  {:<20} {}",
+            "Input Tokens:".dimmed(),
+            stats.total_input_tokens.to_string().bold()
+        );
+        println!(
+            "  {:<20} {}",
+            "Output Tokens:".dimmed(),
+            stats.total_output_tokens.to_string().bold()
+        );
+        println!(
+            "  {:<20} {}",
+            "Estimated Cost:".dimmed(),
+            format!("${:.6}", stats.total_cost_usd).green().bold()
+        );
+    }
 
     Ok(())
 }

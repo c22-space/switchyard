@@ -24,6 +24,9 @@ pub struct RouteEvent {
     pub latency_ms: Option<f64>,
     pub status: String,
     pub error: Option<String>,
+    pub input_tokens: Option<i64>,
+    pub output_tokens: Option<i64>,
+    pub estimated_cost: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -37,6 +40,9 @@ pub struct RouteStats {
     pub p95_latency_ms: f64,
     pub avg_score: f64,
     pub accuracy_pct: f64,
+    pub total_input_tokens: i64,
+    pub total_output_tokens: i64,
+    pub total_cost_usd: f64,
 }
 
 impl EventStore {
@@ -54,7 +60,10 @@ impl EventStore {
                 model TEXT NOT NULL,
                 latency_ms REAL,
                 status TEXT NOT NULL DEFAULT 'ok',
-                error TEXT
+                error TEXT,
+                input_tokens INTEGER,
+                output_tokens INTEGER,
+                estimated_cost REAL
             );
             CREATE INDEX IF NOT EXISTS idx_route_events_timestamp ON route_events(timestamp);
             CREATE INDEX IF NOT EXISTS idx_route_events_category ON route_events(category);
@@ -76,13 +85,16 @@ impl EventStore {
         latency_ms: Option<f64>,
         status: &str,
         error: Option<&str>,
+        input_tokens: Option<i64>,
+        output_tokens: Option<i64>,
+        estimated_cost: Option<f64>,
     ) -> SqlResult<String> {
         let id = Uuid::new_v4().to_string();
         let timestamp = Utc::now().to_rfc3339();
         let conn = self.inner.lock().unwrap();
         conn.execute(
-            "INSERT INTO route_events (id, timestamp, prompt, category, score, is_fallback, backend, model, latency_ms, status, error)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+            "INSERT INTO route_events (id, timestamp, prompt, category, score, is_fallback, backend, model, latency_ms, status, error, input_tokens, output_tokens, estimated_cost)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
             params![
                 id,
                 timestamp,
@@ -95,6 +107,9 @@ impl EventStore {
                 latency_ms,
                 status,
                 error,
+                input_tokens,
+                output_tokens,
+                estimated_cost,
             ],
         )?;
         Ok(id)
@@ -103,7 +118,7 @@ impl EventStore {
     pub fn recent_routes(&self, limit: u32) -> SqlResult<Vec<RouteEvent>> {
         let conn = self.inner.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, timestamp, prompt, category, score, is_fallback, backend, model, latency_ms, status, error
+            "SELECT id, timestamp, prompt, category, score, is_fallback, backend, model, latency_ms, status, error, input_tokens, output_tokens, estimated_cost
              FROM route_events ORDER BY timestamp DESC LIMIT ?1",
         )?;
         let rows = stmt.query_map(params![limit], |row| {
@@ -119,6 +134,9 @@ impl EventStore {
                 latency_ms: row.get(8)?,
                 status: row.get(9)?,
                 error: row.get(10)?,
+                input_tokens: row.get(11)?,
+                output_tokens: row.get(12)?,
+                estimated_cost: row.get(13)?,
             })
         })?;
         rows.collect()
@@ -150,7 +168,11 @@ impl EventStore {
             )
             .unwrap_or(0.0);
         let avg_score: f64 = conn
-            .query_row("SELECT COALESCE(AVG(score), 0) FROM route_events", [], |r| r.get(0))
+            .query_row(
+                "SELECT COALESCE(AVG(score), 0) FROM route_events",
+                [],
+                |r| r.get(0),
+            )
             .unwrap_or(0.0);
 
         // p50 and p95 latency
@@ -178,6 +200,29 @@ impl EventStore {
             0.0
         };
 
+        // Token and cost aggregates
+        let total_input_tokens: i64 = conn
+            .query_row(
+                "SELECT COALESCE(SUM(input_tokens), 0) FROM route_events WHERE input_tokens IS NOT NULL",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0);
+        let total_output_tokens: i64 = conn
+            .query_row(
+                "SELECT COALESCE(SUM(output_tokens), 0) FROM route_events WHERE output_tokens IS NOT NULL",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0);
+        let total_cost_usd: f64 = conn
+            .query_row(
+                "SELECT COALESCE(SUM(estimated_cost), 0) FROM route_events WHERE estimated_cost IS NOT NULL",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0.0);
+
         Ok(RouteStats {
             total_routes: total,
             tool_call_count: tool_call,
@@ -188,6 +233,9 @@ impl EventStore {
             p95_latency_ms: p95,
             avg_score: avg_score,
             accuracy_pct: accuracy,
+            total_input_tokens,
+            total_output_tokens,
+            total_cost_usd,
         })
     }
 }
