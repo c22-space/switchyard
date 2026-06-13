@@ -42,6 +42,7 @@ fn default_threshold() -> f32 {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Capability {
     pub name: String,
+    #[serde(default)]
     pub examples: Vec<String>,
 }
 

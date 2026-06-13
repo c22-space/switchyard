@@ -13,3 +13,4 @@ tracing = { workspace = true }
 rusqlite = { version = "0.32", features = ["bundled"] }
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1", features = ["v4"] }
+qdrant-edge = "0.7"
