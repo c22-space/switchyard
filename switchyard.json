@@ -73,17 +73,17 @@
   "backends": [
     {
       "name": "tool_call",
-      "provider": "openrouter",
-      "base_url": "https://openrouter.ai/api",
+      "provider": "opencode-go",
+      "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
       "api_key": null,
-      "model": "anthropic/claude-sonnet-4"
+      "model": "deepseek-v4-flash"
     },
     {
       "name": "general",
-      "provider": "ollama",
-      "base_url": "http://localhost:11434",
+      "provider": "opencode-go",
+      "base_url": "https://opencode.ai/zen/go/v1/chat/completions",
       "api_key": null,
-      "model": "llama3.1"
+      "model": "mimo-v2.5"
     }
   ]
 }

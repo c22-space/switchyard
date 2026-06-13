@@ -459,7 +459,7 @@ async fn chat_completions(
     let api_key = load_backend_key(&state.env_path, &backend.name);
 
     // Forward to backend
-    let url = format!("{}/v1/chat/completions", backend.base_url);
+    let url = backend.base_url.clone();
     let mut body = serde_json::to_value(&request)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
     body["model"] = serde_json::Value::String(backend.model.clone());
@@ -486,12 +486,12 @@ async fn chat_completions(
     })?;
 
     let status = resp.status();
-    let body = resp
-        .text()
-        .await
-        .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
 
     if !status.is_success() {
+        let body = resp
+            .text()
+            .await
+            .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
         let _ = state.event_store.log_route(
             prompt,
             &route.category,
@@ -509,17 +509,42 @@ async fn chat_completions(
         );
     }
 
-    let mut response: serde_json::Value =
-        serde_json::from_str(&body).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    // Streaming response - forward raw bytes from upstream (already SSE-formatted)
+    if request.stream {
+        use futures_util::StreamExt;
 
-    response["switchyard_route"] = serde_json::json!({
-        "category": route.category,
-        "score": route.score,
-        "is_fallback": route.is_fallback,
-        "backend": backend.name,
-    });
+        let stream = resp.bytes_stream();
+        let body = axum::body::Body::from_stream(stream.map(|result| {
+            result.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
+        }));
 
-    Ok(axum::Json(response).into_response())
+        let response = axum::response::Response::builder()
+            .header("content-type", "text/event-stream")
+            .header("cache-control", "no-cache")
+            .header("connection", "keep-alive")
+            .body(body)
+            .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        Ok(response)
+    } else {
+        // Non-streaming response
+        let body = resp
+            .text()
+            .await
+            .map_err(|_| axum::http::StatusCode::BAD_GATEWAY)?;
+
+        let mut response: serde_json::Value =
+            serde_json::from_str(&body).map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        response["switchyard_route"] = serde_json::json!({
+            "category": route.category,
+            "score": route.score,
+            "is_fallback": route.is_fallback,
+            "backend": backend.name,
+        });
+
+        Ok(axum::Json(response).into_response())
+    }
 }
 
 // ── CLI commands ───────────────────────────────────────────────────────
